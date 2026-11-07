@@ -34,7 +34,7 @@
   --danger: rgba(255, 255, 255, 0.24);
   --info: rgba(255, 255, 255, 0.6);
   --shadow: none;
-  --radius: 20px;
+  --radius: 24px;
   --glass-bg: rgba(30, 38, 50, 0.5);
   --glass-edge: rgba(255, 255, 255, 0.14);
   --glass-sheen: rgba(255, 255, 255, 0.2);
@@ -272,7 +272,7 @@ p {
 .icon-btn {
   border: 1px solid var(--line);
   background: var(--card);
-  border-radius: 10px;
+  border-radius: 12px;
   width: 38px;
   height: 34px;
   display: grid;
@@ -515,7 +515,7 @@ p {
   max-width: 960px;
   margin: 0 auto;
   /* 底部要给悬浮导航栏留出位置 */
-  padding: 20px 18px calc(104px + env(safe-area-inset-bottom, 0px));
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(104px + env(safe-area-inset-bottom, 0px));
   display: grid;
   gap: 16px;
 }
@@ -748,15 +748,16 @@ p {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 12px 12px 14px;
+  padding: 14px 14px 14px 16px;
   background: var(--card);
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 4%, transparent);
   transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1);
 }
 
 .row-habit.checked {
-  border-color: transparent;
+  border-color: color-mix(in srgb, var(--text) 10%, var(--line));
 }
 
 .row-habit:active {
@@ -797,6 +798,53 @@ p {
   border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
+}
+
+/* 首次选择习惯时的模块卡片 */
+
+.option-modules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.option-module {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 68px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--card-2);
+  color: var(--text);
+  text-align: left;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.option-module .row-tile {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 19px;
+}
+
+.option-module .row-name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.option-module .row-chev {
+  font-size: 19px;
+}
+
+@media (max-width: 360px) {
+  .option-modules {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- 月历 ---------- */
@@ -1120,7 +1168,7 @@ p {
   border: 1px solid transparent;
   background: var(--card-2);
   color: var(--text);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 10px 16px;
   font-size: 16px;
   transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1), border-color 0.15s ease, background 0.15s ease;
@@ -1466,6 +1514,132 @@ p {
   display: grid;
 }
 
+/* ---------- 记录复盘与提醒 ---------- */
+
+.record-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.record-stat {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--card-2);
+}
+
+.record-stat span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.record-stat b {
+  overflow: hidden;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record-item {
+  display: grid;
+  gap: 5px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  background: var(--card-2);
+}
+
+.record-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.record-head b {
+  font-size: 15px;
+}
+
+.record-head time {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.record-detail,
+.record-note {
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.record-filter {
+  margin: 10px 0;
+}
+
+.record-empty {
+  padding: 14px;
+  border-radius: 16px;
+  color: var(--muted);
+  background: var(--card-2);
+  font-size: 14px;
+}
+
+.reminder-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 12px 0;
+}
+
+.reminder-banner {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: inset 3px 0 0 var(--text);
+}
+
+.reminder-banner b {
+  font-size: 16px;
+}
+
+.reminder-banner span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .record-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .reminder-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- 表单 ---------- */
 
 .form {
@@ -1497,7 +1671,7 @@ p {
   background: var(--card-2);
   border: 1px solid var(--line);
   color: var(--text);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 9px 11px;
   font: inherit;
   resize: vertical;
@@ -1525,7 +1699,7 @@ p {
   gap: 0;
   background: rgba(120, 120, 128, 0.24);
   border: 0;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 3px;
 }
 
@@ -1615,6 +1789,10 @@ p {
   margin: auto;
 }
 
+.modal.wide {
+  width: min(680px, 100%);
+}
+
 @keyframes pop {
   from {
     opacity: 0;
@@ -1633,7 +1811,7 @@ p {
 .tip {
   background: color-mix(in srgb, var(--accent) 12%, var(--card-2));
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 12px 14px;
   margin: 12px 0;
   font-size: 14px;
@@ -1754,7 +1932,7 @@ p {
   }
 
   .main {
-    padding: 14px 12px calc(100px + env(safe-area-inset-bottom, 0px));
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 12px calc(100px + env(safe-area-inset-bottom, 0px));
   }
 
   .form .row {
@@ -1767,6 +1945,80 @@ p {
 
   .timer.big .t-days {
     font-size: 46px;
+  }
+}
+
+/* ---------- 统一按钮按压与松手回弹 ---------- */
+
+button {
+  transform-origin: center;
+  will-change: transform;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.96);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+button.is-spring-release:not(:disabled) {
+  animation: button-spring-release 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+button.seg-btn.active,
+button.chip.selected {
+  animation: none;
+}
+
+@media (hover: hover) {
+  button:hover:not(:active):not(.is-spring-release) {
+    transform: scale(1);
+  }
+}
+
+@keyframes button-spring-release {
+  0% {
+    transform: scale(0.96);
+  }
+  48% {
+    transform: scale(1.025);
+  }
+  72% {
+    transform: scale(0.997);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 所有圆角使用连续曲率的超椭圆，避免普通 border-radius 的四分之一圆 */
+@supports (corner-shape: superellipse(2)) {
+  *,
+  *::before,
+  *::after {
+    corner-shape: superellipse(2);
+  }
+
+  /* 真正的圆形元素保持正圆 */
+  .tab-badge,
+  .tabbar,
+  .tabbar::before,
+  .tabbar::after,
+  .tab-indicator,
+  .tab-btn,
+  .tab-create,
+  .day-num,
+  .mini-day,
+  .timeline .dot,
+  .sw,
+  .breath-circle {
+    corner-shape: round;
   }
 }
 
@@ -2520,7 +2772,107 @@ p {
     "君子役物，小人役于物。——《荀子》",
     "不积跬步，无以至千里。——《荀子·劝学》",
     "志不立，天下无可成之事。——王阳明",
-    "天下难事，必作于易；天下大事，必作于细。——《道德经》"
+    "天下难事，必作于易；天下大事，必作于细。——《道德经》",
+    "把冲动写下来，它就没有那么大声。",
+    "先离开现场，再处理情绪。",
+    "今天先不做会后悔的决定。",
+    "你现在多忍一分钟，就少一次重新开始。",
+    "真正困难的是前几分钟，不是你的一生。",
+    "想复吸时，先把这十分钟交给时间。",
+    "不靠今天发泄，靠今天积累。",
+    "你不是欠自己一次放纵，是欠自己一次休息。",
+    "把触发点找出来，比责怪自己有用。",
+    "路远不要紧，方向别丢。",
+    "每一次记录，都是下一次抵抗的线索。",
+    "想抽的时候，先问自己现在真正缺什么。",
+    "饿、累、烦、孤单，都不需要用旧习惯解决。",
+    "先照顾身体，再处理欲望。",
+    "把手边的东西收远一点，胜过硬撑很多次。",
+    "给冲动留时间，它会自己退潮。",
+    "你可以想，但不必马上做。",
+    "先喝水，再决定。",
+    "先去洗漱，让身体换个状态。",
+    "冲动不是命令，只是一条建议。",
+    "你能观察到它，就不必服从它。",
+    "今天不奖励自己用旧方式。",
+    "把专注留给眼前这一件小事。",
+    "先完成今天，再考虑永远。",
+    "今天不需要完美，完成就够了。",
+    "记录一次克制，未来就多一条证据。",
+    "你不需要证明给谁看，只需要对得起自己。",
+    "想放弃时，先撑过下一个整点。",
+    "情绪会变化，决定不必马上跟随。",
+    "习惯想拉你回去，你可以选择不回应。",
+    "给自己一个不重来的晚上。",
+    "每一次清醒的选择，都会留下痕迹。",
+    "把诱惑放在麻烦的位置。",
+    "让冲动绕远路。",
+    "不在最容易失守的地方考验自己。",
+    "给自己准备替代动作，而不是只准备意志力。",
+    "想刷手机时，先站起来走两分钟。",
+    "想抽烟时，先刷牙或漱口。",
+    "想喝酒时，先喝一杯水再决定。",
+    "想熬夜时，先把屏幕放远。",
+    "想玩游戏时，先设一个明确的结束时间。",
+    "想吃甜食时，先确认自己是不是饿了。",
+    "先破坏旧流程，再抵抗旧欲望。",
+    "断开一个触发点，就可能少一次复发。",
+    "不把疲惫当成破例的理由。",
+    "累的时候，优先恢复，不要优先放纵。",
+    "今天早点睡，就是对明天最实际的帮助。",
+    "睡眠不是浪费时间，是在修复自己。",
+    "把床留给睡觉，不留给失控。",
+    "晚上做的决定，也要对第二天负责。",
+    "给明天的自己留一个轻松的早晨。",
+    "手机可以晚点看，身体不能一直透支。",
+    "短视频不会替你恢复精力。",
+    "关掉一个入口，就少一场拉扯。",
+    "把通知调成安静，把注意力拿回来。",
+    "不追一次刺激，追一整天清醒。",
+    "让生活有一点空白，不必时刻被填满。",
+    "无聊不是危险，失去掌控才是。",
+    "手空下来，心也会慢慢空下来。",
+    "用一个旧习惯换一个更值得的新习惯。",
+    "不需要一次改掉全部，只需要守住此刻。",
+    "今天比昨天少一次，就是进步。",
+    "数的是选择，不是距离。",
+    "失败一次不等于回到原点。",
+    "复吸是信息，不是判决。",
+    "看清原因，下一次就有了准备。",
+    "停下来复盘，不等于停下来堕落。",
+    "你可以重新开始，也可以带着经验开始。",
+    "过去没守住的日子，不能替你决定今天。",
+    "自责消耗力气，记录带来方向。",
+    "对自己严格，不等于对自己残忍。",
+    "允许难受存在，但别让它掌方向盘。",
+    "先稳住身体，再处理评价。",
+    "你不需要靠惩罚自己变得更好。",
+    "不拿羞耻当动力，用照顾当动力。",
+    "今天做对一件小事，就值得肯定。",
+    "把承诺说小，把行动做实。",
+    "写下理由，想放弃时拿出来看。",
+    "写给未来的自己，而不是写给欲望。",
+    "记住当初为什么想停下来。",
+    "让重要的人知道，你在认真改变。",
+    "需要帮助不是软弱，是清醒。",
+    "把支持放在触手可及的地方。",
+    "有人陪的时候，冲动更容易过去。",
+    "不独自和最难的时刻硬耗。",
+    "把复发诱因当作地图，不是案底。",
+    "躲开高风险场景，不叫逃避。",
+    "拒绝一次邀请，是在保护自己的目标。",
+    "不用解释所有选择，只需坚持自己的边界。",
+    "不为合群重新捡起旧习惯。",
+    "真正的自由，是不被任何东西追着走。",
+    "你想保留的，是选择权。",
+    "每次说不需要，都在增强选择权。",
+    "让习惯退后，让人生向前。",
+    "今天的选择，会成为明天的底气。",
+    "一点点拿回时间，一点点拿回自己。",
+    "稳定比刺激更值得追求。",
+    "清醒的日子会越来越自然。",
+    "你已经走了这么远，不必用一次复吸抹掉。",
+    "今天先守住，明天再继续。"
   ];
 
   function sloganForDay(pool, key, offset) {
@@ -2864,12 +3216,20 @@ p {
 
   /* ==================== 状态 ==================== */
 
-  function uid() {
-    return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  function uid(prefix) {
+    return (prefix || "h") + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
   function emptyState() {
-    return { version: 1, theme: "system", view: "home", activeId: null, habits: [], slogans: [] };
+    return {
+      version: 1,
+      theme: "system",
+      view: "home",
+      activeId: null,
+      habits: [],
+      slogans: [],
+      reminder: { enabled: false, time: "20:00", lastNotified: null }
+    };
   }
 
   var ui = {
@@ -2934,6 +3294,16 @@ p {
     return out.slice(0, 50);
   }
 
+  function normalizeReminder(raw) {
+    raw = raw || {};
+    var time = typeof raw.time === "string" && /^\d{2}:\d{2}$/.test(raw.time) ? raw.time : "20:00";
+    return {
+      enabled: raw.enabled === true,
+      time: time,
+      lastNotified: typeof raw.lastNotified === "string" ? raw.lastNotified : null
+    };
+  }
+
   function normalizeHabit(raw) {
     raw = raw || {};
     var preset = L.getPreset(raw.presetKey) || L.getPreset("other");
@@ -2962,6 +3332,7 @@ p {
             })
             .map(function (u) {
               return {
+                id: typeof u.id === "string" && u.id ? u.id : uid("u"),
                 at: u.at,
                 trigger: typeof u.trigger === "string" ? u.trigger : "",
                 intensity: isNum(u.intensity) ? Math.min(5, Math.max(1, u.intensity)) : 3,
@@ -2976,7 +3347,12 @@ p {
               return r && isNum(r.at);
             })
             .map(function (r) {
-              return { at: r.at, note: typeof r.note === "string" ? r.note : "", streakMs: isNum(r.streakMs) ? r.streakMs : 0 };
+              return {
+                id: typeof r.id === "string" && r.id ? r.id : uid("r"),
+                at: r.at,
+                note: typeof r.note === "string" ? r.note : "",
+                streakMs: isNum(r.streakMs) ? Math.max(0, r.streakMs) : 0
+              };
             })
         : [],
       checkins: Array.isArray(raw.checkins)
@@ -3017,6 +3393,7 @@ p {
       s.activeId = typeof data.activeId === "string" ? data.activeId : null;
       s.habits = Array.isArray(data.habits) ? data.habits.map(normalizeHabit) : [];
       s.slogans = normalizeSlogans(data.slogans);
+      s.reminder = normalizeReminder(data.reminder);
       return s;
     } catch (err) {
       console.warn("本地数据损坏，已忽略", err);
@@ -3036,7 +3413,8 @@ p {
           view: state.view,
           activeId: state.activeId,
           habits: state.habits,
-          slogans: state.slogans
+          slogans: state.slogans,
+          reminder: state.reminder
         })
       );
       return true;
@@ -3155,6 +3533,7 @@ p {
     var habit = getHabit(id);
     if (!habit) return null;
     var rec = {
+      id: uid("u"),
       at: Date.now(),
       trigger: String(data.trigger || "").trim(),
       intensity: Math.min(5, Math.max(1, Number(data.intensity) || 3)),
@@ -3171,7 +3550,7 @@ p {
     if (!habit) return null;
     var streak = L.currentStreakMs(habit);
     habit.bestStreakMs = Math.max(habit.bestStreakMs, streak);
-    var rec = { at: Date.now(), note: String(note || "").trim(), streakMs: streak };
+    var rec = { id: uid("r"), at: Date.now(), note: String(note || "").trim(), streakMs: streak };
     habit.relapses.push(rec);
     habit.cleanSince = Date.now();
     save();
@@ -3255,6 +3634,7 @@ p {
         if (e.target === overlay) closeModal(overlay);
       });
     }
+    scheduleContinuousCornersFallback();
     return overlay;
   }
 
@@ -3379,13 +3759,25 @@ p {
     );
   }
 
+  function presetModuleHTML(preset, attr) {
+    return (
+      '<button class="option-module" ' +
+      attr +
+      '><span class="row-tile">' +
+      preset.emoji +
+      '</span><span class="row-name">' +
+      esc(preset.name) +
+      '</span><span class="row-chev">›</span></button>'
+    );
+  }
+
   function openPresetPicker() {
     var overlay = openModal(
       "<h2>添加戒断目标</h2>" +
         '<p class="muted small">选一个开始。名称、图标和衡量标准进去之后都能改。</p>' +
-        '<div class="list">' +
+        '<div class="option-modules">' +
         L.PRESETS.map(function (preset) {
-          return presetButtonHTML(preset, 'data-pick="' + preset.key + '"');
+          return presetModuleHTML(preset, 'data-pick="' + preset.key + '"');
         }).join("") +
         "</div>" +
         '<div class="modal-foot"><button class="btn ghost" data-pick="cancel">取消</button></div>',
@@ -3761,6 +4153,406 @@ p {
     });
   }
 
+  /* ==================== 记录与复盘 ==================== */
+
+  function allHabitRecords(habit) {
+    if (!habit) return [];
+    var rows = [];
+    habit.urges.forEach(function (u) {
+      rows.push({
+        type: "urge",
+        id: u.id,
+        at: u.at,
+        trigger: u.trigger,
+        intensity: u.intensity,
+        note: u.note,
+        resisted: u.resisted !== false
+      });
+    });
+    habit.relapses.forEach(function (r) {
+      rows.push({
+        type: "relapse",
+        id: r.id,
+        at: r.at,
+        note: r.note,
+        streakMs: r.streakMs
+      });
+    });
+    rows.sort(function (a, b) {
+      return b.at - a.at;
+    });
+    return rows;
+  }
+
+  function recordTitle(row) {
+    if (row.type === "relapse") return "重新开始计时";
+    return row.resisted ? "扛住冲动" : "没挺住";
+  }
+
+  function recordDetailText(row) {
+    if (row.type === "urge") {
+      return "触发：" + (row.trigger || "说不清") + " · 强度 " + row.intensity + "/5";
+    }
+    return "此前坚持 " + L.formatDuration(row.streakMs) + (row.note ? " · " + row.note : "");
+  }
+
+  function recordItemHTML(row, allowActions) {
+    return (
+      '<li class="record-item">' +
+      '<div class="record-head"><b>' + esc(recordTitle(row)) + "</b><time>" + esc(dateTimeText(row.at)) + "</time></div>" +
+      '<div class="record-detail">' + esc(recordDetailText(row)) + "</div>" +
+      (row.type === "urge" && row.note ? '<div class="record-note">' + esc(row.note) + "</div>" : "") +
+      (allowActions
+        ? '<div class="record-actions">' +
+          '<button class="link-btn" data-record-edit data-record-type="' + row.type + '" data-record-id="' + esc(row.id) + '">改备注</button>' +
+          '<button class="link-btn" data-record-del data-record-type="' + row.type + '" data-record-id="' + esc(row.id) + '">删除误记</button>' +
+          "</div>"
+        : "") +
+      "</li>"
+    );
+  }
+
+  function recordSummaryHTML(habit) {
+    var stats = L.urgeStats(habit);
+    var top = L.triggerTally(habit)[0];
+    return (
+      '<div class="record-summary">' +
+      '<div class="record-stat"><span>冲动</span><b>' + stats.total + " 次</b></div>" +
+      '<div class="record-stat"><span>扛住率</span><b>' + (stats.total ? Math.round(stats.rate * 100) : 0) + "%</b></div>" +
+      '<div class="record-stat"><span>最常见触发</span><b title="' +
+      esc(top ? top.trigger : "") +
+      '">' +
+      esc(top ? top.trigger : "暂无") +
+      "</b></div>" +
+      "</div>"
+    );
+  }
+
+  function recordsPreviewHTML(habit) {
+    var rows = allHabitRecords(habit);
+    if (!rows.length) {
+      return (
+        '<section class="card"><h3>记录与复盘</h3>' +
+        '<p class="muted small">还没有冲动或破戒记录。想抽的时候点「我有点想…」，记录下来的触发点会集中显示在这里。</p>' +
+        "</section>"
+      );
+    }
+    return (
+      '<section class="card"><h3>记录与复盘</h3>' +
+      recordSummaryHTML(habit) +
+      '<ul class="record-list">' +
+      rows.slice(0, 3).map(function (row) { return recordItemHTML(row, false); }).join("") +
+      "</ul>" +
+      '<div class="actions"><button class="btn ghost small-btn" data-act="open-records" data-id="' + habit.id + '">查看全部记录</button></div>' +
+      "</section>"
+    );
+  }
+
+  function openRecordEditor(habit, type, id, onSaved) {
+    var list = type === "relapse" ? habit.relapses : habit.urges;
+    var rec = null;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) {
+        rec = list[i];
+        break;
+      }
+    }
+    if (!rec) return;
+    var overlay = openModal(
+      "<h2>修改记录</h2>" +
+        (type === "urge"
+          ? '<label class="field"><span>触发因素</span><input data-record-trigger maxlength="20" value="' + esc(rec.trigger) + '"></label>' +
+            '<label class="field"><span>冲动强度：<b data-record-intensity-label>' + rec.intensity + '</b> / 5</span><input type="range" min="1" max="5" step="1" value="' + rec.intensity + '" data-record-intensity></label>'
+          : "") +
+        '<label class="field"><span>备注</span><textarea data-record-note rows="3" maxlength="160">' + esc(rec.note) + "</textarea></label>" +
+        '<div class="modal-foot"><button class="btn ghost" data-record-save="cancel">取消</button>' +
+        '<button class="btn primary" data-record-save="save">保存</button></div>',
+      {}
+    );
+    var range = $("[data-record-intensity]", overlay);
+    var label = $("[data-record-intensity-label]", overlay);
+    if (range && label) {
+      range.addEventListener("input", function () {
+        label.textContent = range.value;
+      });
+    }
+    overlay.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-record-save]");
+      if (!btn) return;
+      if (btn.getAttribute("data-record-save") === "cancel") {
+        closeModal(overlay);
+        return;
+      }
+      rec.note = ($("[data-record-note]", overlay).value || "").trim().slice(0, 160);
+      if (type === "urge") {
+        rec.trigger = ($("[data-record-trigger]", overlay).value || "").trim().slice(0, 20) || "说不清";
+        rec.intensity = Math.min(5, Math.max(1, Number($("[data-record-intensity]", overlay).value) || 3));
+      }
+      save();
+      closeModal(overlay);
+      render();
+      if (onSaved) onSaved();
+      toast("记录已更新");
+    });
+  }
+
+  function openRecords(habitId) {
+    var habit = getHabit(habitId);
+    if (!habit) return;
+    var filter = "all";
+    var overlay = openModal(
+      "<h2>" + esc(habit.name) + " · 记录与复盘</h2>" +
+        '<p class="muted small">这里保存每次冲动、扛住和破戒的结果。误记可以删除，备注也可以补写。</p>' +
+        '<div data-record-summary>' + recordSummaryHTML(habit) + "</div>" +
+        '<div class="chips record-filter" data-record-filters>' +
+        '<button class="chip selected" data-record-filter="all">全部</button>' +
+        '<button class="chip" data-record-filter="urge">冲动</button>' +
+        '<button class="chip" data-record-filter="relapse">破戒</button></div>' +
+        '<div data-record-list></div>' +
+        '<div class="modal-foot"><button class="btn primary" data-record-close>关闭</button></div>',
+      { size: "wide" }
+    );
+
+    function filteredRows() {
+      var rows = allHabitRecords(habit);
+      if (filter === "urge") return rows.filter(function (row) { return row.type === "urge"; });
+      if (filter === "relapse") return rows.filter(function (row) { return row.type === "relapse"; });
+      return rows;
+    }
+
+    function refresh() {
+      $("[data-record-summary]", overlay).innerHTML = recordSummaryHTML(habit);
+      var rows = filteredRows();
+      $("[data-record-list]", overlay).innerHTML = rows.length
+        ? '<ul class="record-list">' + rows.map(function (row) { return recordItemHTML(row, true); }).join("") + "</ul>"
+        : '<div class="record-empty">这一类还没有记录。</div>';
+      $$("[data-record-filter]", overlay).forEach(function (btn) {
+        btn.classList.toggle("selected", btn.getAttribute("data-record-filter") === filter);
+      });
+    }
+
+    overlay.addEventListener("click", function (e) {
+      var filterBtn = e.target.closest("[data-record-filter]");
+      if (filterBtn) {
+        filter = filterBtn.getAttribute("data-record-filter");
+        refresh();
+        return;
+      }
+      if (e.target.closest("[data-record-close]")) {
+        closeModal(overlay);
+        return;
+      }
+      var edit = e.target.closest("[data-record-edit]");
+      if (edit) {
+        openRecordEditor(habit, edit.getAttribute("data-record-type"), edit.getAttribute("data-record-id"), refresh);
+        return;
+      }
+      var del = e.target.closest("[data-record-del]");
+      if (!del) return;
+      var type = del.getAttribute("data-record-type");
+      var id = del.getAttribute("data-record-id");
+      if (!window.confirm("删除这条误记？删除后无法恢复。")) return;
+      if (type === "relapse") {
+        var removeIndex = -1;
+        var latestAt = -1;
+        habit.relapses.forEach(function (r, index) {
+          if (r.at > latestAt) latestAt = r.at;
+          if (r.id === id) removeIndex = index;
+        });
+        if (removeIndex >= 0) {
+          var removed = habit.relapses[removeIndex];
+          habit.relapses.splice(removeIndex, 1);
+          if (removed.at === latestAt) {
+            habit.cleanSince = Math.max(0, removed.at - (removed.streakMs || 0));
+          }
+        }
+      } else {
+        habit.urges = habit.urges.filter(function (u) { return u.id !== id; });
+      }
+      save();
+      render();
+      refresh();
+      toast("误记已删除");
+    });
+
+    refresh();
+  }
+
+  /* ==================== 每日提醒 ==================== */
+
+  function reminderPermission() {
+    if (!("Notification" in window)) return "unsupported";
+    return window.Notification.permission || "default";
+  }
+
+  function reminderTimeParts() {
+    var parts = String(state.reminder.time || "20:00").split(":");
+    return {
+      hour: Math.min(23, Math.max(0, Number(parts[0]) || 0)),
+      minute: Math.min(59, Math.max(0, Number(parts[1]) || 0))
+    };
+  }
+
+  function pendingHabits(now) {
+    return state.habits.filter(function (habit) {
+      return !L.isCheckedIn(habit, now);
+    });
+  }
+
+  function missedDaysBeforeToday(habit, now) {
+    var cursor = L.addDays(L.startOfDay(now), -1);
+    var started = L.startOfDay(habit.createdAt || habit.cleanSince || now);
+    var count = 0;
+    while (cursor >= started && count < 30) {
+      if (L.isCheckedIn(habit, cursor)) break;
+      count++;
+      cursor = L.addDays(cursor, -1);
+    }
+    return count;
+  }
+
+  function reminderMessage(now) {
+    var pending = pendingHabits(now);
+    if (!pending.length) return "";
+    var missed = 0;
+    var missedHabit = null;
+    pending.forEach(function (habit) {
+      var days = missedDaysBeforeToday(habit, now);
+      if (days > missed) {
+        missed = days;
+        missedHabit = habit;
+      }
+    });
+    if (missed >= 2 && missedHabit) {
+      return "「" + missedHabit.name + "」已经连续 " + missed + " 天没有打卡，今天回来记一笔吧。";
+    }
+    return "今天还有 " + pending.length + " 个目标没有打卡。";
+  }
+
+  function reminderBannerHTML(now) {
+    if (!state.reminder.enabled || !state.habits.length) return "";
+    var target = reminderTimeParts();
+    var current = new Date(now);
+    if (current.getHours() * 60 + current.getMinutes() < target.hour * 60 + target.minute) return "";
+    var message = reminderMessage(now);
+    if (!message) return "";
+    return (
+      '<section class="reminder-banner"><b>今天还没打卡</b><span>' + esc(message) + "</span></section>"
+    );
+  }
+
+  function showSystemNotification(title, body) {
+    if (reminderPermission() !== "granted") return false;
+    try {
+      var note = new window.Notification(title, {
+        body: body,
+        tag: "jieyin-daily-reminder",
+        renotify: false
+      });
+      note.onclick = function () {
+        window.focus();
+        note.close();
+      };
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function checkReminder(now) {
+    if (!state.reminder.enabled || !state.habits.length) return false;
+    var target = reminderTimeParts();
+    var current = new Date(now);
+    if (current.getHours() * 60 + current.getMinutes() < target.hour * 60 + target.minute) return false;
+    var today = L.dayKey(now);
+    if (state.reminder.lastNotified === today) return false;
+    var message = reminderMessage(now);
+    if (!message) return false;
+    var sent = showSystemNotification("解瘾 · 今日打卡提醒", message);
+    state.reminder.lastNotified = today;
+    save();
+    if (!sent) toast(message);
+    return true;
+  }
+
+  function toggleReminder() {
+    state.reminder.enabled = !state.reminder.enabled;
+    save();
+    render();
+    if (state.reminder.enabled && reminderPermission() === "default" && window.Notification && window.Notification.requestPermission) {
+      window.Notification.requestPermission().then(function (permission) {
+        toast(permission === "granted" ? "浏览器提醒已开启" : "未获得通知权限，将使用应用内提醒");
+        render();
+      });
+    } else {
+      toast(state.reminder.enabled ? "每日提醒已开启" : "每日提醒已关闭");
+    }
+  }
+
+  function testReminderNow() {
+    var message = reminderMessage(Date.now()) || "每日提醒测试：到了该打卡的时间。";
+    if (reminderPermission() === "default" && window.Notification && window.Notification.requestPermission) {
+      window.Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") showSystemNotification("解瘾 · 每日提醒测试", message);
+        else toast("未获得通知权限，应用内提醒仍可正常显示");
+        render();
+      });
+      return;
+    }
+    if (!showSystemNotification("解瘾 · 每日提醒测试", message)) toast(message);
+  }
+
+  function downloadCalendarReminder() {
+    var target = reminderTimeParts();
+    var start = new Date();
+    start.setHours(target.hour, target.minute, 0, 0);
+    var end = new Date(start.getTime() + 10 * L.MINUTE);
+    function localStamp(date) {
+      return (
+        date.getFullYear() +
+        L.pad2(date.getMonth() + 1) +
+        L.pad2(date.getDate()) +
+        "T" +
+        L.pad2(date.getHours()) +
+        L.pad2(date.getMinutes()) +
+        "00"
+      );
+    }
+    var stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    var lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Jieyin//Daily Reminder//ZH-CN",
+      "CALSCALE:GREGORIAN",
+      "X-WR-CALNAME:解瘾每日提醒",
+      "BEGIN:VEVENT",
+      "UID:jieyin-daily-" + Date.now() + "@local",
+      "DTSTAMP:" + stamp,
+      "DTSTART:" + localStamp(start),
+      "DTEND:" + localStamp(end),
+      "RRULE:FREQ=DAILY",
+      "SUMMARY:今天打卡：解瘾",
+      "DESCRIPTION:打开解瘾，记录今天的坚持。所有数据仍只保存在你自己的设备中。",
+      "BEGIN:VALARM",
+      "TRIGGER:PT0M",
+      "ACTION:DISPLAY",
+      "DESCRIPTION:该打卡了：解瘾",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ];
+    var blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "jieyin-daily-reminder.ics";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    toast("日历提醒文件已生成");
+  }
+
   /* ==================== 视图 ==================== */
 
   /* 每个页签两套图标：未选中用描边（对应 SF Symbols 的无后缀版本），
@@ -3829,15 +4621,7 @@ p {
 
   /* 顶部只留一条细标题栏（左右对称占位，标题真居中） */
   function topbarHTML() {
-    return (
-      '<header class="topbar">' +
-      '<span class="bar-side"></span>' +
-      '<span class="bar-title">' +
-      esc(barTitle()) +
-      "</span>" +
-      '<span class="bar-side"></span>' +
-      "</header>"
-    );
+    return "";
   }
 
   /* 底部悬浮的导航栏（苹果那种半透明玻璃质感） */
@@ -4121,13 +4905,13 @@ p {
 
   function emptyHTML() {
     var presets = L.PRESETS.map(function (p) {
-      return presetButtonHTML(p, 'data-act="new-habit" data-key="' + p.key + '"');
+      return presetModuleHTML(p, 'data-act="new-habit" data-key="' + p.key + '"');
     }).join("");
     return (
       '<section class="card intro">' +
       "<h2>从一个坏习惯开始</h2>" +
       '<p class="muted">选一个你现在最想摆脱的。应用会帮你计时、记录冲动、算你省回了多少钱或多少时间。</p>' +
-      '<div class="list">' + presets + "</div>" +
+      '<div class="option-modules">' + presets + "</div>" +
       '<p class="muted small">所有数据只保存在这台设备的浏览器里，不会上传到任何服务器。</p>' +
       "</section>"
     );
@@ -4155,6 +4939,7 @@ p {
     if (t.resisted > 0) line.push("扛住冲动 " + t.resisted + " 次");
     return (
       sloganHTML() +
+      reminderBannerHTML(now) +
       '<p class="muted small summary-line">' + esc(line.join(" · ")) + "</p>" +
       '<div class="rows">' +
       state.habits
@@ -4487,6 +5272,7 @@ p {
       '<p class="muted small">' + esc(facts.join(" · ")) + "</p>" +
       "</section>" +
       costLine +
+      recordsPreviewHTML(habit) +
       '<section class="card"><h3>本月打卡</h3>' +
       monthGridHTML(habit, cursor.year, cursor.month, now) +
       CAL_LEGEND +
@@ -4546,6 +5332,25 @@ p {
       esc(themeNames[state.theme] || "跟随系统") +
       (state.theme === "system" ? "（当前系统是" + (resolvedTheme() === "dark" ? "深色" : "浅色") + "）" : "") +
       "。</p></section>" +
+      '<section class="card"><h3>每日提醒</h3>' +
+      '<p class="muted small">网页通知需要解瘾保持打开；如果希望关掉页面也能提醒，请添加到系统日历。</p>' +
+      '<div class="reminder-row">' +
+      '<button class="btn ' + (state.reminder.enabled ? "primary" : "ghost") + '" data-act="toggle-reminder">' +
+      (state.reminder.enabled ? "每日提醒已开启" : "开启每日提醒") +
+      "</button>" +
+      '<label class="field"><span>提醒时间</span><input type="time" data-reminder-time value="' + esc(state.reminder.time) + '"></label>' +
+      "</div>" +
+      '<p class="muted small">通知权限：' +
+      esc(
+        reminderPermission() === "granted"
+          ? "已允许"
+          : reminderPermission() === "denied"
+            ? "已拒绝，可在浏览器设置中重新开启"
+            : "尚未授权"
+      ) +
+      "。连续多日未打卡时，会优先提醒最近断档最多的目标。</p>" +
+      '<div class="actions"><button class="btn ghost small-btn" data-act="test-reminder">测试提醒</button>' +
+      '<button class="btn ghost small-btn" data-act="calendar-reminder">添加到系统日历</button></div></section>' +
       '<section class="card"><h3>我的自律标语</h3>' +
       '<p class="muted small">首页每天轮换一句标语。你可以写自己的，它们会和内置标语一起出现，也会出现在冲动急救的呼吸引导里。</p>' +
       '<div class="actions"><button class="btn ghost" data-act="manage-slogans">管理我的标语' +
@@ -4587,6 +5392,7 @@ p {
     var y = window.scrollY;
     $("#app").innerHTML = topbarHTML() + '<main class="main">' + viewHTML() + "</main>" + tabbarHTML();
     setupTabbar();
+    scheduleContinuousCornersFallback();
 
     // 换页时内容错落着进场，方向跟着底部导航走
     var viewKey = state.view + ":" + (state.view === "detail" ? state.activeId || "" : "");
@@ -4606,6 +5412,118 @@ p {
     window.scrollTo(0, resetScroll ? 0 : y);
   }
 
+  /* ==================== 连续圆角回退 ==================== */
+
+  var continuousCornerTimer = null;
+  var continuousCornerObserver = null;
+  var continuousCornerResize = null;
+  var continuousCornerSelector = [
+    ".card",
+    ".btn",
+    ".icon-btn",
+    ".row-habit",
+    ".row-tile",
+    ".option-module",
+    ".sum",
+    ".record-stat",
+    ".record-item",
+    ".record-empty",
+    ".reminder-banner",
+    ".tip",
+    ".modal",
+    ".list",
+    ".list-row",
+    ".seg",
+    ".seg-btn",
+    ".chip",
+    ".field input:not([type='range']):not([type='checkbox'])",
+    ".field textarea",
+    ".field select",
+    ".day",
+    ".progress",
+    ".progress-bar",
+    ".mini",
+    "#toast"
+  ].join(",");
+
+  function supportsNativeContinuousCorners() {
+    return !!(window.CSS && CSS.supports && CSS.supports("corner-shape", "superellipse(2)"));
+  }
+
+  function superellipseClipPath(width, height, radius) {
+    var r = Math.min(radius, width / 2, height / 2);
+    if (r <= 0) return "";
+    var steps = Math.max(5, Math.min(12, Math.ceil(r / 3)));
+    var power = 1;
+    var points = [];
+    function point(x, y) {
+      points.push(Math.round(x * 100) / 100 + " " + Math.round(y * 100) / 100);
+    }
+    point(r, 0);
+    point(width - r, 0);
+    for (var i = 1; i <= steps; i++) {
+      var t = (i / steps) * (Math.PI / 2);
+      point(width - r + r * Math.pow(Math.sin(t), power), r - r * Math.pow(Math.cos(t), power));
+    }
+    point(width, height - r);
+    for (var j = 1; j <= steps; j++) {
+      var u = (j / steps) * (Math.PI / 2);
+      point(width - r + r * Math.pow(Math.cos(u), power), height - r + r * Math.pow(Math.sin(u), power));
+    }
+    point(r, height);
+    for (var k = 1; k <= steps; k++) {
+      var v = Math.PI / 2 - (k / steps) * (Math.PI / 2);
+      point(r - r * Math.pow(Math.cos(v), power), height - r + r * Math.pow(Math.sin(v), power));
+    }
+    point(0, r);
+    for (var m = 1; m <= steps; m++) {
+      var z = (m / steps) * (Math.PI / 2);
+      point(r - r * Math.pow(Math.cos(z), power), r - r * Math.pow(Math.sin(z), power));
+    }
+    return "path('M " + points[0].replace(" ", " ") + " L " + points.slice(1).join(" L ") + " Z')";
+  }
+
+  function applyContinuousCornerToElement(el) {
+    if (!el || !el.isConnected) return;
+    var rect = el.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
+    var style = getComputedStyle(el);
+    var radius = parseFloat(style.borderTopLeftRadius) || 0;
+    if (radius <= 0) return;
+    el.style.clipPath = superellipseClipPath(rect.width, rect.height, radius);
+    el.style.webkitClipPath = el.style.clipPath;
+    if (continuousCornerResize) continuousCornerResize.observe(el);
+  }
+
+  function applyContinuousCornersFallback() {
+    if (supportsNativeContinuousCorners()) return;
+    $$(continuousCornerSelector).forEach(applyContinuousCornerToElement);
+  }
+
+  function scheduleContinuousCornersFallback() {
+    if (supportsNativeContinuousCorners()) return;
+    clearTimeout(continuousCornerTimer);
+    continuousCornerTimer = setTimeout(applyContinuousCornersFallback, 20);
+  }
+
+  window.JieyinContinuousCorners = {
+    path: superellipseClipPath,
+    apply: applyContinuousCornersFallback
+  };
+
+  if (!supportsNativeContinuousCorners()) {
+    if (window.ResizeObserver) {
+      continuousCornerResize = new ResizeObserver(function (entries) {
+        entries.forEach(function (entry) {
+          applyContinuousCornerToElement(entry.target);
+        });
+      });
+    }
+    continuousCornerObserver = new MutationObserver(scheduleContinuousCornersFallback);
+    continuousCornerObserver.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("resize", scheduleContinuousCornersFallback);
+  }
+
   /* ==================== 数据导入导出 ==================== */
 
   function exportData() {
@@ -4614,7 +5532,9 @@ p {
       version: 1,
       exportedAt: new Date().toISOString(),
       theme: state.theme,
-      habits: state.habits
+      habits: state.habits,
+      slogans: state.slogans,
+      reminder: state.reminder
     };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
@@ -4652,6 +5572,11 @@ p {
         }
         if (!window.confirm("导入会覆盖当前所有记录，确定继续吗？")) return;
         state.habits = data.habits.map(normalizeHabit);
+        if (data.theme === "light" || data.theme === "dark" || data.theme === "system") {
+          state.theme = data.theme;
+        }
+        if (Array.isArray(data.slogans)) state.slogans = normalizeSlogans(data.slogans);
+        if (data.reminder) state.reminder = normalizeReminder(data.reminder);
         state.activeId = state.habits.length ? state.habits[0].id : null;
         state.view = "home";
         save();
@@ -4763,6 +5688,22 @@ p {
       openSloganManager();
       return;
     }
+    if (act === "open-records") {
+      openRecords(id);
+      return;
+    }
+    if (act === "toggle-reminder") {
+      toggleReminder();
+      return;
+    }
+    if (act === "test-reminder") {
+      testReminderNow();
+      return;
+    }
+    if (act === "calendar-reminder") {
+      downloadCalendarReminder();
+      return;
+    }
     if (act === "sos") {
       openSOS(id);
       return;
@@ -4794,6 +5735,20 @@ p {
     if (e.key === "Escape") closeTopModal();
   });
 
+  document.addEventListener("change", function (e) {
+    var input = e.target.closest("[data-reminder-time]");
+    if (!input) return;
+    if (!/^\d{2}:\d{2}$/.test(input.value)) {
+      toast("提醒时间格式不对");
+      return;
+    }
+    state.reminder.time = input.value;
+    state.reminder.lastNotified = null;
+    save();
+    render();
+    toast("提醒时间已改为 " + input.value);
+  });
+
   var lastDayKey = L.dayKey(Date.now());
   if (systemTheme) {
     var onSystemThemeChange = function () {
@@ -4812,6 +5767,8 @@ p {
     }, 150);
   });
 
+  var lastReminderMinute = null;
+
   /* 每秒只更新两个文本节点，成本很低；但页面不可见时没必要跑，
      所以切到后台就停掉计时器，回到前台立刻补一次再继续。 */
   function tick() {
@@ -4820,6 +5777,11 @@ p {
       lastDayKey = L.dayKey(now);
       render();
       return;
+    }
+    var currentMinute = L.dayKey(now) + " " + new Date(now).getHours() + ":" + new Date(now).getMinutes();
+    if (currentMinute !== lastReminderMinute) {
+      lastReminderMinute = currentMinute;
+      if (checkReminder(now)) render();
     }
     $$('[data-live="streak"]').forEach(function (el) {
       var habit = getHabit(el.getAttribute("data-id"));
@@ -4849,6 +5811,48 @@ p {
       startTick();
     }
   });
+
+  /* 所有按钮共用同一套按压与松手回弹 */
+  var pressedButton = null;
+  var lastPointerRelease = { button: null, at: 0 };
+
+  function playButtonRelease(button) {
+    if (!button || button.disabled) return;
+    button.classList.remove("is-spring-release");
+    void button.offsetWidth;
+    button.classList.add("is-spring-release");
+  }
+
+  document.addEventListener("pointerdown", function (event) {
+    var button = event.target.closest("button");
+    if (!button || button.disabled) return;
+    pressedButton = button;
+    button.classList.remove("is-spring-release");
+  }, { passive: true });
+
+  document.addEventListener("pointerup", function () {
+    if (!pressedButton) return;
+    var button = pressedButton;
+    pressedButton = null;
+    lastPointerRelease = { button: button, at: Date.now() };
+    playButtonRelease(button);
+  }, { passive: true });
+
+  document.addEventListener("pointercancel", function () {
+    if (!pressedButton) return;
+    var button = pressedButton;
+    pressedButton = null;
+    lastPointerRelease = { button: button, at: Date.now() };
+    playButtonRelease(button);
+  }, { passive: true });
+
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest("button");
+    if (!button || button.disabled) return;
+    if (lastPointerRelease.button === button && Date.now() - lastPointerRelease.at < 600) return;
+    playButtonRelease(button);
+  });
+
   startTick();
 
   render(true);
