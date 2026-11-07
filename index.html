@@ -41,8 +41,8 @@
   --glass-active: rgba(255, 255, 255, 0.15);
 
   /* ---- 液态玻璃：所有可调参数都在这里，搬到 React / Vue / Svelte 只需要复制这一段 ---- */
-  --lg-blur: 14px; /* 磨砂程度 */
-  --lg-saturate: 175%; /* 背后颜色的饱和度提升 */
+  --lg-blur: 30px; /* Apple 导航标准：更明显的液态玻璃磨砂 */
+  --lg-saturate: 190%; /* 背后颜色的饱和度提升 */
   --lg-refract-band: 22; /* 边缘折射带的宽度（像素），越大越柔 */
   --lg-refract-strength: 0.12; /* 边缘最多把画面朝中心拉多少（0.04 很含蓄，0.2 很夸张） */
   --lg-tint: rgba(120, 120, 128, 0.22); /* 中性灰的玻璃：比页面亮一点，选中项的深色胶囊才看得出来 */
@@ -53,6 +53,18 @@
   --lg-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
   --lg-gloss-opacity: 0.6;
   --lg-capsule: rgba(0, 0, 0, 0.72); /* 选中项的凹陷胶囊 */
+
+  /* Apple 液态玻璃导航标准 */
+  --nav-glass: rgba(210, 220, 216, 0.1);
+  --nav-border: rgba(255, 255, 255, 0.8);
+  --nav-ink: rgba(255, 255, 255, 0.8);
+  --nav-ink-active: #ffffff;
+  --nav-lens: rgba(255, 255, 255, 0.1);
+  --nav-lens-border: rgba(255, 255, 255, 0.68);
+  --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.28),
+    0 4px 12px rgba(33, 47, 40, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.22);
 }
 
 [data-theme="light"] {
@@ -82,6 +94,17 @@
   --lg-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
   --lg-gloss-opacity: 0.5;
   --lg-capsule: rgba(120, 120, 128, 0.2); /* 浅色下用浅灰凹陷，白底上才看得出来 */
+
+  --nav-glass: rgba(210, 220, 216, 0.11);
+  --nav-border: rgba(255, 255, 255, 0.82);
+  --nav-ink: rgba(17, 19, 18, 0.68);
+  --nav-ink-active: #000000;
+  --nav-lens: rgba(255, 255, 255, 0.18);
+  --nav-lens-border: rgba(255, 255, 255, 0.7);
+  --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.18),
+    0 4px 12px rgba(33, 47, 40, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.24);
 }
 
 * {
@@ -264,91 +287,143 @@ p {
   transform: scale(1.08);
 }
 
-/* ---------- 底部悬浮导航（液态玻璃） ---------- */
+/* ---------- 底部悬浮导航（Apple 液态玻璃参考） ---------- */
 
 .tabbar {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
   position: fixed;
   left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  bottom: max(32px, env(safe-area-inset-bottom, 0px));
   z-index: 30;
-  /* 拉满宽度，图标均匀摊开（和 Threads 那条一致） */
-  width: calc(100% - 24px);
-  max-width: 460px;
-  display: flex;
+  display: inline-flex;
+  width: 354px;
+  max-width: calc(100vw - 32px);
   align-items: center;
   gap: 4px;
-  /* 左右内边距要大于胶囊的加宽量（PILL_EXTRA = 10），
-     否则最左/最右时胶囊的横向留白会被压到贴边，和上下不等距 */
-  padding: 6px 14px;
-  border-radius: 999px;
-  overflow: hidden;
+  padding: 8px;
+  overflow: visible;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
-  box-shadow: var(--lg-shadow), inset 0 1px 0 var(--lg-sheen),
-    inset 0 -1px 0 color-mix(in srgb, var(--lg-line) 70%, transparent);
+  border: 1px solid var(--nav-border);
+  border-radius: 999px;
+  background: var(--nav-glass);
+  box-shadow: var(--nav-shadow);
+  transform: translateX(-50%);
+  isolation: isolate;
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  backdrop-filter: blur(30px) saturate(190%);
 }
 
-/* 会流动的高亮胶囊 */
+/* 跟随指针的镜面高光，让玻璃对背景产生真实的空间关系 */
+.tabbar.glass::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  padding: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.24),
+    rgba(255, 255, 255, 0.05) 20%,
+    transparent 43%
+  );
+  box-shadow: none;
+  opacity: 0;
+  mix-blend-mode: normal;
+  -webkit-mask: none;
+  mask: none;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  content: "";
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabbar:hover.glass::before {
+    opacity: 0.8;
+  }
+}
+
+/* 外侧亮边与内侧第二道高光，避免变成普通磨砂条 */
+.tabbar.glass::after {
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    transparent 52%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  opacity: 1;
+  content: "";
+  pointer-events: none;
+}
+
+/* 独立滑动透镜：尺寸与当前图标位完全一致 */
 .tab-indicator {
   position: absolute;
+  top: 8px;
   left: 0;
-  top: 6px;
-  height: calc(100% - 12px);
-  width: 0;
-  border-radius: 999px;
-  /* 选中项是"凹进去"的深色胶囊（参考图二），不是白色高光 */
-  background: var(--lg-capsule);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4),
-    inset 0 -1px 0 color-mix(in srgb, var(--lg-line-light) 22%, transparent);
-  /* 对应 glassEffectID：形状在新旧位置之间流动，弹性收尾 */
-  transition: transform 0.38s cubic-bezier(0.3, 1.34, 0.46, 1), width 0.38s cubic-bezier(0.3, 1.34, 0.46, 1);
-  pointer-events: none;
   z-index: 1;
+  width: 112px;
+  height: 58px;
+  border-radius: 999px;
+  transform: translate3d(0, 0, 0);
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.tab-indicator-inner {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--nav-lens-border);
+  border-radius: inherit;
+  background: var(--nav-lens);
+  box-shadow: 0 2px 8px rgba(31, 48, 38, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(12px) saturate(155%);
+  backdrop-filter: blur(12px) saturate(155%);
 }
 
 .tabbar.dragging .tab-indicator {
   transition: none;
 }
 
-/* 光泽层：上沿一道高光 + 下缘两条负扩散的 inset 高光（月牙形），
-   模拟光从玻璃底下透上来，也就是那篇文章里让玻璃"活"起来的关键一层。 */
-.glass::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 3;
-  opacity: var(--lg-gloss-opacity, 0.5);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--lg-sheen) 60%, transparent), transparent 46%);
-  box-shadow: inset -10px -8px 0 -11px var(--lg-line-light), inset 0 -9px 0 -8px var(--lg-line-light),
-    inset 0 1px 0 var(--lg-sheen);
-}
-
 .tab-btn {
   position: relative;
   z-index: 2;
-  /* 等分伸展：栏越宽，图标摊得越开 */
-  flex: 1 1 0;
-  min-width: 0;
-  height: 54px;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 0;
+  display: inline-grid;
+  width: 64px;
+  height: 58px;
+  flex: none;
+  place-items: center;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
-  /* 未选中也保持明亮的浅灰，像 iOS 那样图标不发灰 */
-  color: color-mix(in srgb, var(--text) 78%, transparent);
-  transition: color 0.22s ease, transform 0.12s ease;
+  color: var(--nav-ink);
+  outline: none;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn:hover {
+  color: var(--nav-ink-active);
 }
 
 .tab-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.94);
+}
+
+.tab-btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nav-ink-active) 28%, transparent);
 }
 
 .tab-glyph {
@@ -360,7 +435,7 @@ p {
 .tab-icon {
   width: 28px;
   height: 28px;
-  transition: transform 0.34s cubic-bezier(0.3, 1.3, 0.5, 1);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .icon-solid {
@@ -375,56 +450,90 @@ p {
   display: block;
 }
 
-/* 红色小圆点：对应参考里的 badge */
 .tab-badge {
   position: absolute;
   top: -1px;
   right: -3px;
   width: 11px;
   height: 11px;
+  border: 1px solid color-mix(in srgb, var(--nav-glass) 80%, transparent);
   border-radius: 50%;
-  /* 黑白配色下靠"实心墨点"来提示（保留 NotificationBadge 的描边结构） */
-  background: var(--text);
-  border: 1px solid color-mix(in srgb, var(--bg) 70%, transparent);
-  box-shadow: 0 0 3px color-mix(in srgb, var(--text) 30%, transparent);
+  background: var(--nav-ink-active);
+  box-shadow: 0 0 3px color-mix(in srgb, var(--nav-ink-active) 30%, transparent);
 }
 
-/* 中间那个「+」：光秃秃的加号，没有底盘（参考图二） */
 .tab-create {
   position: relative;
   z-index: 2;
-  flex: 0 0 auto;
-  width: 54px;
-  height: 54px;
-  display: grid;
+  display: inline-grid;
+  width: 64px;
+  height: 58px;
+  flex: none;
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   background: transparent;
-  color: var(--text);
-  transition: transform 0.22s cubic-bezier(0.3, 1.35, 0.5, 1), color 0.2s ease;
+  color: var(--nav-ink);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .tab-create svg {
-  width: 33px; /* 比页签图标略大，和参考一致 */
-  height: 33px;
+  width: 28px;
+  height: 28px;
+}
+
+.tab-create:hover {
+  color: var(--nav-ink-active);
 }
 
 .tab-create:active {
-  transform: scale(1.12); /* 对应 CreateButton 选中时的 scaleEffect(1.12) */
-  color: var(--accent);
+  transform: scale(0.94);
+}
+
+.tab-create:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nav-ink-active) 28%, transparent);
 }
 
 .tab-btn.active,
 .tab-btn.near {
-  /* 导航保持单色（和 Threads 一致）：选中只是变实、变亮，不换成强调色 */
-  color: var(--text);
+  color: var(--nav-ink-active);
 }
 
 .tab-btn.active .tab-icon {
-  transform: scale(1.04); /* 对应 scaleEffect(isSelected ? 1.04 : 1.0) */
-  stroke-width: 2.2; /* 选中时笔画更粗，像 iOS 那样更“实” */
+  transform: scale(1.04);
+}
+
+@media (max-width: 620px) {
+  .tabbar {
+    bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    /* 对齐手机参考图：约占屏宽 90%，左右各留约 5% */
+    width: max(292px, 90vw);
+    max-width: 430px;
+    gap: 2px;
+    /* 与 96px 选中玻璃配套，首尾玻璃到外框上下左右都留 7px */
+    padding: 6px 27px;
+    justify-content: space-between;
+  }
+
+  .tab-indicator {
+    top: 6px;
+    width: 96px;
+    height: 52px;
+  }
+
+  .tab-btn,
+  .tab-create {
+    width: 54px;
+    height: 52px;
+  }
+
+  .tab-icon,
+  .tab-create svg {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* ---------- 布局 ---------- */
@@ -3772,7 +3881,9 @@ p {
         (active ? " active" : "") +
         '" data-act="nav" data-view="' +
         tab.key +
-        '" aria-label="' +
+        '"' +
+        (active ? ' aria-current="page"' : "") +
+        ' aria-label="' +
         esc(tab.label) +
         '">' +
         '<span class="tab-glyph">' +
@@ -3796,8 +3907,8 @@ p {
       return button;
     }).join("");
     return (
-      '<nav class="tabbar glass">' +
-      '<span class="tab-indicator" aria-hidden="true"></span>' +
+      '<nav class="tabbar glass" aria-label="主导航">' +
+      '<span class="tab-indicator" aria-hidden="true"><span class="tab-indicator-inner"></span></span>' +
       items +
       "</nav>"
     );
@@ -3817,11 +3928,6 @@ p {
       if (buttons[i].classList.contains("active")) activeIndex = i;
     }
 
-    /* 选中胶囊比格子更宽，向两侧各多出一个内边距的量，做出 iOS 那种“盖住间隙”的玻璃块 */
-    var PILL_EXTRA = 10;
-    /* 胶囊离栏内边界的最小留白（px）：两端也要留着，否则看着像贴边 */
-    var MIN_GAP = 4;
-
     function limit(value, min, max) {
       return value < min ? min : value > max ? max : value;
     }
@@ -3838,29 +3944,26 @@ p {
     }
 
     function maxOffset() {
-      var pillWidth = spanOf(0).width + PILL_EXTRA * 2;
-      return Math.max(MIN_GAP, bar.clientWidth - MIN_GAP - pillWidth);
+      return Math.max(0, bar.clientWidth - lensWidth());
     }
 
-    function geometry(index, stretch) {
-      var span = spanOf(index);
-      var offset = span.offset - PILL_EXTRA;
-      var width = span.width + PILL_EXTRA * 2;
-      var extra = stretch ? width * 0.16 : 0;
+    function lensWidth() {
+      return indicator.getBoundingClientRect().width;
+    }
 
-      /* 整体平移到栏的内边界之内（不改变宽度），左右用同一个边界，
-         所以两端看到的留白是对称的。 */
-      var left = offset - extra / 2;
-      var right = offset + width + extra / 2;
-      var shift = 0;
-      if (left < MIN_GAP) shift = MIN_GAP - left;
-      else if (right > bar.clientWidth - MIN_GAP) shift = bar.clientWidth - MIN_GAP - right;
-      return { index: index, offset: offset + shift, width: width };
+    function geometry(index) {
+      var span = spanOf(index);
+      var width = lensWidth();
+      var offset = span.offset + (span.width - width) / 2;
+      return {
+        index: index,
+        offset: limit(offset, 0, maxOffset()),
+        width: width
+      };
     }
 
     function paint(geom) {
-      indicator.style.width = geom.width + "px";
-      indicator.style.transform = "translateX(" + geom.offset + "px)";
+      indicator.style.transform = "translate3d(" + geom.offset + "px, 0, 0)";
     }
 
     /* 不带过渡地直接放到目标位置（首次渲染、旋转屏幕时用） */
@@ -3904,32 +4007,34 @@ p {
     var previous = ui.tabGeom;
     var shouldAnimate = previous && previous.index !== activeIndex;
     if (shouldAnimate) {
-      // 用 rAF 代替强制回流：避免每次切页都同步重排整个文档（那是"卡一下"的主因）
       indicator.style.transition = "none";
       paint(previous);
       requestAnimationFrame(function () {
-        // 双层 rAF：确保"旧位置"这一帧真的被渲染出来，
-        // 否则浏览器可能把两次赋值合并、胶囊直接跳到终点（看起来就是没有过渡）
         requestAnimationFrame(function () {
           indicator.style.transition = "";
-          indicator.style.transitionDuration = "0.34s";
-          paint(geometry(activeIndex, true));
-          clearTimeout(ui.tabTimer);
-          ui.tabTimer = setTimeout(function () {
-            indicator.style.transitionDuration = "";
-            paint(geometry(activeIndex, false));
-          }, 170);
+          paint(geometry(activeIndex));
         });
       });
     } else {
       place(activeIndex);
     }
-    ui.tabGeom = geometry(activeIndex, false);
+    ui.tabGeom = geometry(activeIndex);
 
     bar.__sync = function () {
       place(activeIndex);
-      ui.tabGeom = geometry(activeIndex, false);
+      ui.tabGeom = geometry(activeIndex);
     };
+
+    bar.addEventListener("pointermove", function (event) {
+      var rect = bar.getBoundingClientRect();
+      bar.style.setProperty("--pointer-x", (event.clientX - rect.left) + "px");
+      bar.style.setProperty("--pointer-y", (event.clientY - rect.top) + "px");
+    });
+
+    bar.addEventListener("pointerleave", function () {
+      bar.style.setProperty("--pointer-x", "50%");
+      bar.style.setProperty("--pointer-y", "50%");
+    });
 
     /* ---- 拖动底栏 ---- */
     var startX = 0;
@@ -3955,7 +4060,7 @@ p {
       bar.classList.add("dragging");
       var geom = {
         offset: limit(startOffset + dx, 0, maxOffset()),
-        width: spanOf(0).width + PILL_EXTRA * 2
+        width: lensWidth()
       };
       paint(geom);
       var near = nearestIndex(geom.offset, geom.width);
@@ -3970,7 +4075,7 @@ p {
       indicator.style.transition = "";
       bar.classList.remove("dragging");
       for (var k = 0; k < buttons.length; k++) buttons[k].classList.remove("near");
-      var width = spanOf(0).width + PILL_EXTRA * 2;
+      var width = lensWidth();
 
       if (!moved) {
         // 点按：按松手位置判断点了哪一格
