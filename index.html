@@ -150,6 +150,8 @@ body {
   font-size: 15px;
   line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -535,8 +537,40 @@ p {
   }
 }
 
+@keyframes pageForwardIn {
+  from {
+    opacity: 0;
+    transform: translate3d(44px, 0, 0) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes pageBackIn {
+  from {
+    opacity: 0;
+    transform: translate3d(-32px, 0, 0) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 .main.anim-in {
-  animation: pageIn 0.22s ease-in-out both;
+  animation: pageIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.main.page-forward {
+  animation: pageForwardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.main.page-back {
+  animation: pageBackIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
 }
 
 /* 进度条在进场时自己长出来 */
@@ -549,7 +583,9 @@ p {
   }
 }
 
-.main.anim-in .progress-bar {
+.main.anim-in .progress-bar,
+.main.page-forward .progress-bar,
+.main.page-back .progress-bar {
   transform-origin: left center;
   animation: barGrow 0.75s cubic-bezier(0.22, 0.9, 0.3, 1) both;
 }
@@ -3242,6 +3278,7 @@ button.chip.selected {
     suppressTabClick: 0,
     lastViewKey: null,
     forceAnim: false,
+    pageMotion: null,
     pulse: null,
     sloganAnim: false
   };
@@ -3608,12 +3645,26 @@ button.chip.selected {
   }
 
   function goHome() {
+    ui.pageMotion = state.view === "home" ? null : "back";
     state.view = "home";
     save();
     render(true);
   }
 
+  function pageMotionFor(nextView, nextId) {
+    if (nextView === state.view) {
+      if (nextView !== "detail" || nextId === undefined || nextId === state.activeId) return null;
+      return "forward";
+    }
+    if (nextView === "home") return "back";
+    if (nextView === "detail") return "forward";
+    if (state.view === "detail") return "forward";
+    var order = { home: 0, month: 1, year: 2, settings: 3 };
+    return (order[nextView] || 0) >= (order[state.view] || 0) ? "forward" : "back";
+  }
+
   function goTo(view, id) {
+    ui.pageMotion = pageMotionFor(view, id);
     state.view = view;
     if (id !== undefined) state.activeId = id;
     save();
@@ -5400,8 +5451,12 @@ button.chip.selected {
     ui.lastViewKey = viewKey;
     if ((changed || ui.forceAnim) && !reduceMotion()) {
       var main = $(".main");
-      if (main) main.classList.add("anim-in");
+      if (main) {
+        var motion = changed ? ui.pageMotion : null;
+        main.classList.add(motion === "back" ? "page-back" : motion === "forward" ? "page-forward" : "anim-in");
+      }
     }
+    ui.pageMotion = null;
     ui.forceAnim = false;
     ui.pulse = null;
     ui.sloganAnim = false;
