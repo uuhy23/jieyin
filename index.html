@@ -1872,11 +1872,13 @@ body.modal-open .main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  min-width: 0;
 }
 
 .field {
   display: grid;
   gap: 5px;
+  min-width: 0;
 }
 
 .field > span {
@@ -1888,6 +1890,8 @@ body.modal-open .main {
 .field textarea,
 .field select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   background: var(--card-2);
   border: 1px solid var(--line);
   color: var(--text);
@@ -1895,6 +1899,16 @@ body.modal-open .main {
   padding: 9px 11px;
   font: inherit;
   resize: vertical;
+}
+
+.field input[type="datetime-local"],
+.field input[type="date"],
+.field input[type="time"] {
+  display: block;
+  text-align: left;
+  line-height: 1.35;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .field input:focus,
