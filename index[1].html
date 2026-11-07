@@ -1,0 +1,4886 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <!-- maximum-scale + user-scalable=no：禁止双击/双指放大（Android 生效，
+         iOS 出于无障碍会忽略这两个，所以样式里还有一层 touch-action） -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0e1116" id="themeColor" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="description" content="解瘾 · 不良嗜好戒断助手：戒断计时、冲动急救、省钱与身体恢复里程碑。数据只存在本机。" />
+    <title>解瘾 · 不良嗜好戒断助手</title>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" id="statusBarStyle" />
+    <meta name="apple-mobile-web-app-title" content="解瘾" />
+    <style>
+:root {
+  /* 配色对齐 iOS 深色模式：纯黑底 + 两级灰卡片，靠留白和层级说话，不靠描边 */
+  --bg: #000000;
+  --bg-soft: #000000;
+  --card: #1c1c1e;
+  --card-2: #2c2c2e;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #ffffff;
+  --muted: #8e8e93;
+  /* 统一为黑白色调：强调色就是"墨色"（深色下是白、浅色下是黑），
+     其余状态色一律用明度区分，不再引入色相 */
+  --accent: #ffffff;
+  --accent-ink: #000000;
+  --warn: rgba(255, 255, 255, 0.42);
+  --danger: rgba(255, 255, 255, 0.24);
+  --info: rgba(255, 255, 255, 0.6);
+  --shadow: none;
+  --radius: 20px;
+  --glass-bg: rgba(30, 38, 50, 0.5);
+  --glass-edge: rgba(255, 255, 255, 0.14);
+  --glass-sheen: rgba(255, 255, 255, 0.2);
+  --glass-active: rgba(255, 255, 255, 0.15);
+
+  /* ---- 液态玻璃：所有可调参数都在这里，搬到 React / Vue / Svelte 只需要复制这一段 ---- */
+  --lg-blur: 30px; /* Apple 导航标准：更明显的液态玻璃磨砂 */
+  --lg-saturate: 190%; /* 背后颜色的饱和度提升 */
+  --lg-refract-band: 22; /* 边缘折射带的宽度（像素），越大越柔 */
+  --lg-refract-strength: 0.12; /* 边缘最多把画面朝中心拉多少（0.04 很含蓄，0.2 很夸张） */
+  --lg-tint: rgba(120, 120, 128, 0.22); /* 中性灰的玻璃：比页面亮一点，选中项的深色胶囊才看得出来 */
+  --lg-line: rgba(255, 255, 255, 0.1); /* 一圈发丝边 */
+  --lg-line-light: rgba(255, 255, 255, 0.5); /* 边缘高光 */
+  --lg-line-soft: rgba(255, 255, 255, 0.1);
+  --lg-sheen: rgba(255, 255, 255, 0.22);
+  --lg-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
+  --lg-gloss-opacity: 0.6;
+  --lg-capsule: rgba(0, 0, 0, 0.72); /* 选中项的凹陷胶囊 */
+
+  /* Apple 液态玻璃导航标准 */
+  --nav-glass: rgba(210, 220, 216, 0.1);
+  --nav-border: rgba(255, 255, 255, 0.8);
+  --nav-ink: rgba(255, 255, 255, 0.8);
+  --nav-ink-active: #ffffff;
+  --nav-lens: rgba(255, 255, 255, 0.1);
+  --nav-lens-border: rgba(255, 255, 255, 0.68);
+  --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.28),
+    0 4px 12px rgba(33, 47, 40, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="light"] {
+  /* iOS 浅色模式的分组背景 + 白卡片 */
+  --bg: #f2f2f7;
+  --bg-soft: #f2f2f7;
+  --card: #ffffff;
+  --card-2: #e5e5ea;
+  --line: rgba(60, 60, 67, 0.12);
+  --text: #000000;
+  --muted: #8a8a8e;
+  --accent: #000000;
+  --accent-ink: #ffffff;
+  --warn: rgba(0, 0, 0, 0.42);
+  --danger: rgba(0, 0, 0, 0.24);
+  --info: rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-edge: rgba(15, 23, 42, 0.08);
+  --glass-sheen: rgba(255, 255, 255, 0.95);
+  --glass-active: rgba(15, 23, 42, 0.07);
+
+  --lg-tint: rgba(255, 255, 255, 0.5);
+  --lg-line: rgba(255, 255, 255, 0.6);
+  --lg-line-light: rgba(255, 255, 255, 0.95);
+  --lg-line-soft: rgba(15, 23, 42, 0.06);
+  --lg-sheen: rgba(255, 255, 255, 0.9);
+  --lg-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+  --lg-gloss-opacity: 0.5;
+  --lg-capsule: rgba(120, 120, 128, 0.2); /* 浅色下用浅灰凹陷，白底上才看得出来 */
+
+  --nav-glass: rgba(210, 220, 216, 0.11);
+  --nav-border: rgba(255, 255, 255, 0.82);
+  --nav-ink: rgba(17, 19, 18, 0.68);
+  --nav-ink-active: #000000;
+  --nav-lens: rgba(255, 255, 255, 0.18);
+  --nav-lens-border: rgba(255, 255, 255, 0.7);
+  --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.18),
+    0 4px 12px rgba(33, 47, 40, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.24);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- 像原生 App 一样的操作手感 ---------- */
+
+html,
+body {
+  /* pan-x pan-y 里不含 pinch-zoom：双指缩放和双击缩放都交给页面自己处理，
+     滚动仍然正常。这是 iOS 上唯一真正生效的禁止缩放方式。 */
+  touch-action: pan-x pan-y;
+  /* 去掉下拉刷新和滚动到头的橡皮筋回弹 */
+  overscroll-behavior: none;
+  /* 横屏时不要自动放大字号 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* 原生 App 里点按不会选中文字、也不会有灰色点击高亮 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 输入框仍然要能选中、能长按粘贴 */
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ---------- 液态玻璃：一块玻璃需要的全部东西 ---------- */
+
+.glass {
+  position: relative;
+  background: var(--lg-tint);
+  border: 1px solid var(--lg-line);
+  box-shadow: var(--lg-shadow), inset 0 1px 0 var(--lg-sheen);
+  /* 不支持 url() 滤镜的浏览器（Safari / Firefox）停在这一行，只有磨砂 */
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+}
+
+/* 边缘那道“底层透上来的光”：1.5px 的渐变描边，用遮罩抠成一圈 */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--lg-line-soft) 26%,
+    var(--lg-line-light) 62%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  mix-blend-mode: screen;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 4;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.center {
+  text-align: center;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 顶部标题栏 ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  /* 左右留等宽占位，中间的标题才是真的居中 */
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  /* 加上安全区，避免在「添加到主屏幕」的独立窗口里被手机状态栏压住 */
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 12px;
+  /* 顶栏做成不透明的：像 Threads 那样。半透明 + 模糊紧贴状态栏时
+     会把下面的内容糊成一团脏影，而这里本来也不需要透视 */
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+  box-shadow: inset 0 -1px 0 var(--lg-line);
+}
+
+.bar-title {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-side {
+  min-width: 0;
+}
+
+.icon-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  width: 38px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.icon-btn:hover {
+  transform: scale(1.08);
+}
+
+/* ---------- 底部悬浮导航（Apple 液态玻璃参考） ---------- */
+
+.tabbar {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  position: fixed;
+  left: 50%;
+  bottom: max(32px, env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: inline-flex;
+  width: 354px;
+  max-width: calc(100vw - 32px);
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  overflow: visible;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  border: 1px solid var(--nav-border);
+  border-radius: 999px;
+  background: var(--nav-glass);
+  box-shadow: var(--nav-shadow);
+  transform: translateX(-50%);
+  isolation: isolate;
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  backdrop-filter: blur(30px) saturate(190%);
+}
+
+/* 跟随指针的镜面高光，让玻璃对背景产生真实的空间关系 */
+.tabbar.glass::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  padding: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.24),
+    rgba(255, 255, 255, 0.05) 20%,
+    transparent 43%
+  );
+  box-shadow: none;
+  opacity: 0;
+  mix-blend-mode: normal;
+  -webkit-mask: none;
+  mask: none;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  content: "";
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabbar:hover.glass::before {
+    opacity: 0.8;
+  }
+}
+
+/* 外侧亮边与内侧第二道高光，避免变成普通磨砂条 */
+.tabbar.glass::after {
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    transparent 52%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  opacity: 1;
+  content: "";
+  pointer-events: none;
+}
+
+/* 独立滑动透镜：尺寸与当前图标位完全一致 */
+.tab-indicator {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  z-index: 1;
+  width: 112px;
+  height: 58px;
+  border-radius: 999px;
+  transform: translate3d(0, 0, 0);
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.tab-indicator-inner {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--nav-lens-border);
+  border-radius: inherit;
+  background: var(--nav-lens);
+  box-shadow: 0 2px 8px rgba(31, 48, 38, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(12px) saturate(155%);
+  backdrop-filter: blur(12px) saturate(155%);
+}
+
+.tabbar.dragging .tab-indicator {
+  transition: none;
+}
+
+.tab-btn {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  width: 64px;
+  height: 58px;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nav-ink);
+  outline: none;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn:hover {
+  color: var(--nav-ink-active);
+}
+
+.tab-btn:active {
+  transform: scale(0.94);
+}
+
+.tab-btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nav-ink-active) 28%, transparent);
+}
+
+.tab-glyph {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.tab-icon {
+  width: 28px;
+  height: 28px;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.icon-solid {
+  display: none;
+}
+
+.tab-btn.active .icon-outline {
+  display: none;
+}
+
+.tab-btn.active .icon-solid {
+  display: block;
+}
+
+.tab-badge {
+  position: absolute;
+  top: -1px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border: 1px solid color-mix(in srgb, var(--nav-glass) 80%, transparent);
+  border-radius: 50%;
+  background: var(--nav-ink-active);
+  box-shadow: 0 0 3px color-mix(in srgb, var(--nav-ink-active) 30%, transparent);
+}
+
+.tab-create {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  width: 64px;
+  height: 58px;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nav-ink);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tab-create svg {
+  width: 28px;
+  height: 28px;
+}
+
+.tab-create:hover {
+  color: var(--nav-ink-active);
+}
+
+.tab-create:active {
+  transform: scale(0.94);
+}
+
+.tab-create:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nav-ink-active) 28%, transparent);
+}
+
+.tab-btn.active,
+.tab-btn.near {
+  color: var(--nav-ink-active);
+}
+
+.tab-btn.active .tab-icon {
+  transform: scale(1.04);
+}
+
+@media (max-width: 620px) {
+  .tabbar {
+    bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    /* 对齐手机参考图：约占屏宽 90%，左右各留约 5% */
+    width: max(292px, 90vw);
+    max-width: 430px;
+    gap: 2px;
+    /* 与 96px 选中玻璃配套，首尾玻璃到外框上下左右都留 7px */
+    padding: 6px 27px;
+    justify-content: space-between;
+  }
+
+  .tab-indicator {
+    top: 6px;
+    width: 96px;
+    height: 52px;
+  }
+
+  .tab-btn,
+  .tab-create {
+    width: 54px;
+    height: 52px;
+  }
+
+  .tab-icon,
+  .tab-create svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ---------- 布局 ---------- */
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  /* 底部要给悬浮导航栏留出位置 */
+  padding: 20px 18px calc(104px + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  gap: 16px;
+}
+
+/* ---------- 动效 ---------- */
+
+/* 换页：整页淡入 + 轻微放大，对应参考里的
+   .transition(.opacity.combined(with: .scale(0.98))) + easeInOut(0.22) */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.main.anim-in {
+  animation: pageIn 0.22s ease-in-out both;
+}
+
+/* 进度条在进场时自己长出来 */
+@keyframes barGrow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.main.anim-in .progress-bar {
+  transform-origin: left center;
+  animation: barGrow 0.75s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+/* 下一个里程碑的圈轻轻呼吸 */
+@keyframes breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+}
+
+.timeline li.next .dot {
+  animation: breathe 2.6s ease-in-out infinite;
+}
+
+/* 打完卡那一下：按钮弹、格子亮 */
+@keyframes popIn {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.row-habit.just-checked .check-btn {
+  animation: popIn 0.42s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+/* 打完卡整行放大一下，不做光晕 */
+.row-habit.just-checked {
+  animation: rowZoom 0.46s cubic-bezier(0.3, 1.45, 0.5, 1) both;
+}
+
+@keyframes rowZoom {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 选中项统一用“放大一下”来反馈 */
+@keyframes selectPop {
+  0% {
+    transform: scale(0.93);
+  }
+  58% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.seg-btn.active,
+.chip.selected {
+  animation: selectPop 0.36s cubic-bezier(0.3, 1.45, 0.5, 1) both;
+}
+
+@keyframes cellPulse {
+  0% {
+    transform: scale(0.82);
+  }
+  55% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 标语换一句时淡进来 */
+@keyframes sloganIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.slogan-text.slogan-in {
+  animation: sloganIn 0.4s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+/* 图标选中时弹一下 */
+@keyframes iconPop {
+  0% {
+    transform: scale(0.84);
+  }
+  58% {
+    transform: scale(1.16);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.tab-btn.active .tab-icon {
+  animation: iconPop 0.44s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+/* 按压时的轻微反馈 */
+.row-habit .habit-emoji {
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.row-habit:active .habit-emoji {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+.row-main:active b {
+  opacity: 0.75;
+}
+
+/* 系统开了「减少动态效果」就全部关掉 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.summary.wrap {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.sum {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: grid;
+  gap: 2px;
+}
+
+.sum .k {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.sum .v {
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sum .sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ---------- 首页的习惯行 ---------- */
+
+.summary-line {
+  margin: -4px 2px 0;
+}
+
+.rows {
+  display: grid;
+  gap: 10px;
+}
+
+.row-habit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  background: var(--card);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.row-habit.checked {
+  border-color: transparent;
+}
+
+.row-habit:active {
+  transform: scale(1.015);
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.row-text {
+  display: grid;
+  min-width: 0;
+}
+
+.row-text b {
+  font-size: 16px;
+}
+
+.row-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check-btn {
+  flex: 0 0 auto;
+  min-width: 78px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ---------- 月历 ---------- */
+
+.cursor-bar,
+.cal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.cursor-label,
+.cal-year {
+  font-size: 16px;
+  min-width: 104px;
+  text-align: center;
+}
+
+.cursor-bar .small-btn,
+.cal-head .small-btn {
+  margin-left: auto;
+}
+
+.cursor-bar .link-btn,
+.cal-head .link-btn {
+  margin-left: auto;
+}
+
+/* 大号月份标题（对应系统日历那种"九月"） */
+.cal-title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0 0 14px;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+.cal-weeks {
+  display: grid;
+}
+
+.cal-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-top: 1px solid var(--line);
+}
+
+.cal-week:first-child {
+  border-top: 0;
+}
+
+/* 每一格：日期数字 + 下面一条状态标记 */
+.day {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 3px;
+  padding: 7px 0 6px;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.day-num {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.day-mark {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+/* 打卡：数字后面一个实心圆、日期反色——所以日期不会被盖住 */
+.day.done .day-num {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* 今天但还没打卡：数字加粗 + 一圈描边 */
+.day.today:not(.done) .day-num {
+  border: 1.5px solid var(--text);
+  font-weight: 700;
+}
+
+.day.future {
+  opacity: 0.3;
+}
+
+.day.blank {
+  pointer-events: none;
+}
+
+.day.urge .day-mark {
+  background: color-mix(in srgb, var(--text) 42%, transparent);
+}
+
+.day.relapse .day-mark {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.day:not(:disabled):active {
+  transform: scale(1.06);
+}
+
+.day.pulse .day-num {
+  animation: cellPulse 0.42s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+/* ---------- 年历（简洁版：没有卡片框，就是年份 + 12 个月 + 一行汇总） ---------- */
+
+.year-view {
+  display: grid;
+  gap: 16px;
+}
+
+.year-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.year-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 12px;
+}
+
+.mini {
+  display: grid;
+  gap: 7px;
+  /* min-width:0 是关键：否则迷你月的 min-content 会把网格撑出屏幕、整页能左右滑 */
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  justify-items: stretch;
+  transition: transform 0.2s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+@media (hover: hover) {
+  .mini:hover {
+    transform: scale(1.03);
+  }
+}
+
+.mini-label {
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.mini-cal {
+  display: grid;
+  /* minmax(0,1fr)：允许单元格收缩，不再按内容宽度顶出去 */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* 不加这行的话格子会被拉伸成竖椭圆（宽度由列决定、高度按行高铺满） */
+  align-items: center;
+  gap: 1px;
+}
+
+.year-sum {
+  margin: 0;
+}
+
+/* 迷你月：显示真实日期数字；打卡的日子整个格子是一个实心圆、数字反色。
+   一天只用一个元素（不再套内层），年视图能少一半节点 */
+.mini-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  font-size: 9.5px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  /* line-height:1 + 很小的 padding：让内容高度小于格子宽度，
+    否则内容会把格子撑高，aspect-ratio 失效、圆变成竖椭圆 */
+  line-height: 1;
+  padding: 1px;
+  border: 0;
+  /* background-clip 让圆形底色比格子小一圈，元素数不变但视觉上有留白 */
+  border-radius: 50%;
+  background-clip: content-box;
+}
+
+.mini-day.done {
+  background-color: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.mini-day.future {
+  opacity: 0.35;
+}
+
+.mini-day.urge::after,
+.mini-day.relapse::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  width: 7px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text) 42%, transparent);
+}
+
+.mini-day.relapse::after {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+/* ---------- 详情页 ---------- */
+
+.big-check {
+  flex: 1;
+  min-width: 140px;
+  padding: 16px 20px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 14px;
+}
+
+.cost-card h3 {
+  margin-bottom: 4px;
+}
+
+.cost-value {
+  font-size: 34px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+/* ---------- 习惯卡片 ---------- */
+
+.habit-emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.habit-emoji.big {
+  font-size: 40px;
+}
+
+.timer {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 10px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer .t-days {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.timer .t-unit {
+  color: var(--muted);
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.timer .t-clock {
+  font-family: "SFMono-Regular", ui-monospace, Consolas, monospace;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.timer.big .t-days {
+  font-size: 60px;
+}
+
+.timer.big .t-clock {
+  font-size: 22px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ---------- 按钮 ---------- */
+
+.btn {
+  border: 1px solid transparent;
+  background: var(--card-2);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 16px;
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1), border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover {
+  transform: scale(1.02);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.btn.ok {
+  background: var(--card-2);
+  border-color: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn.warn {
+  background: var(--card-2);
+  border-color: transparent;
+}
+
+.btn.danger {
+  background: color-mix(in srgb, var(--text) 12%, var(--card));
+  border-color: transparent;
+  color: var(--text);
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.wide {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  border-style: dashed;
+  color: var(--muted);
+}
+
+/* 苹果那种"编辑"式的文字按钮：只用颜色，不加边框和底色 */
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 15px;
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1), opacity 0.18s ease;
+}
+
+.link-btn:active {
+  transform: scale(1.06);
+}
+
+@media (hover: hover) {
+  .link-btn:hover {
+    opacity: 0.75;
+  }
+}
+
+.back {
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 4px 0;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+/* ---------- 首屏引导 ---------- */
+
+.slogan {
+  position: relative;
+  display: grid;
+  gap: 10px;
+}
+
+.slogan-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.slogan-text {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.45;
+  max-width: 46ch;
+}
+
+.slogan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 2px;
+}
+
+.slogan-inline {
+  color: var(--muted);
+}
+
+.small-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 9px;
+}
+
+.intro h2 {
+  font-size: 23px;
+}
+
+/* 苹果的分组列表：一张圆角卡片里若干行，行之间一条发丝线 */
+.list {
+  display: grid;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 14px 0;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  color: var(--text);
+  font-size: 17px;
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1), background 0.15s ease;
+}
+
+.list-row:last-child {
+  border-bottom: 0;
+}
+
+.list-row:active {
+  transform: scale(1.015);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.row-tile {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(120, 120, 128, 0.24);
+  font-size: 17px;
+}
+
+.row-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-chev {
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ---------- 里程碑 ---------- */
+
+.progress-wrap {
+  margin: 12px 0 16px;
+}
+
+.progress {
+  height: 8px;
+  background: var(--card-2);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text) 35%, transparent), var(--text));
+  transition: width 0.4s ease;
+}
+
+.progress-wrap p {
+  margin: 8px 0 0;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.timeline li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.timeline li:last-child {
+  border-bottom: 0;
+}
+
+.timeline .dot {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.timeline li.done .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.timeline li.next .dot {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.timeline li.todo {
+  opacity: 0.5;
+}
+
+.ms-body {
+  display: grid;
+}
+
+.ms-body span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.timeline li.next .ms-body b {
+  color: var(--accent);
+}
+
+/* ---------- 图例（月历、年历共用） ---------- */
+
+.sw {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+.sw-done {
+  background: var(--text);
+}
+
+.sw-urge {
+  width: 16px;
+  height: 3px;
+  flex: 0 0 16px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--text) 42%, transparent);
+}
+
+.sw-relapse {
+  width: 16px;
+  height: 3px;
+  flex: 0 0 16px;
+  border-radius: 2px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.sw-none {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--line) 100%, transparent);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* ---------- 条形统计 ---------- */
+
+/* ---------- 日志列表 ---------- */
+
+.logs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.logs li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.logs li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.logs li > div {
+  display: grid;
+}
+
+/* ---------- 表单 ---------- */
+
+.form {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 5px;
+}
+
+.field > span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font: inherit;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field .hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: normal;
+}
+
+.field input[type="range"] {
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.seg {
+  display: flex;
+  gap: 0;
+  background: rgba(120, 120, 128, 0.24);
+  border: 0;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.seg-btn {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 13.5px;
+}
+
+.seg-btn.active {
+  background: #636366;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .seg-btn.active {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.cost-note {
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  margin: 4px 0 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.chip {
+  border: 1px solid transparent;
+  background: var(--card-2);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 15px;
+  color: var(--text);
+  transition: transform 0.18s cubic-bezier(0.3, 1.3, 0.5, 1), color 0.18s ease;
+}
+
+.chip:hover {
+  transform: scale(1.05);
+}
+
+.chip:active {
+  transform: scale(1.09);
+}
+
+.chip.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* ---------- 弹窗 ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 16, 0.62);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.modal {
+  width: min(560px, 100%);
+  background: var(--card);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: pop 0.16s ease;
+  margin: auto;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.tip {
+  background: color-mix(in srgb, var(--accent) 12%, var(--card-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+.facts {
+  margin: 12px 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.facts b {
+  color: var(--text);
+}
+
+/* ---------- 呼吸引导 ---------- */
+
+.breath-wrap {
+  display: grid;
+  place-items: center;
+  height: 240px;
+  margin: 10px 0;
+}
+
+.breath-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 85%, #fff), var(--accent) 70%);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 16px;
+  transform: scale(1);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+/* ---------- 结果 ---------- */
+
+.result {
+  text-align: center;
+}
+
+.result-icon {
+  font-size: 40px;
+  margin-bottom: 6px;
+}
+
+.result .facts {
+  text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+
+.danger-zone {
+  border-color: color-mix(in srgb, var(--danger) 30%, var(--line));
+}
+
+.hero-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 20px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 11px 18px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 80;
+  font-size: 14px;
+  max-width: 90vw;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 560px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-title {
+    font-size: 26px;
+  }
+
+  .day-num {
+    width: 30px;
+    height: 30px;
+  }
+
+  .mini-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .slogan-text {
+    font-size: 17px;
+  }
+
+  .card {
+    padding: 16px 14px;
+  }
+
+  .main {
+    padding: 14px 12px calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .form .row {
+    grid-template-columns: 1fr;
+  }
+
+  .timer .t-days {
+    font-size: 34px;
+  }
+
+  .timer.big .t-days {
+    font-size: 46px;
+  }
+}
+
+</style>
+    
+    <!-- 主屏图标：默认用白底版（想换回深色改成 apple-touch-icon.png，
+         同时把 manifest.json 里的 icons 改回 icon-192/512.png） -->
+    <link rel="apple-touch-icon" href="data:image/png;base64,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" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%AA%3C/text%3E%3C/svg%3E"
+    />
+    <script>
+      // 通过 http(s) 打开才注册 manifest（单文件直接打开时它只会 404）
+      if (/^https?:$/.test(window.location.protocol)) {
+        var manifestLink = document.createElement("link");
+        manifestLink.rel = "manifest";
+        manifestLink.href = "manifest.json";
+        document.head.appendChild(manifestLink);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script>
+/* logic.js — 纯逻辑层。不依赖 DOM，浏览器与 Node 均可加载，方便测试。 */
+(function (root, factory) {
+  var api = factory();
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = api;
+  } else {
+    root.QuitLogic = api;
+  }
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  var MINUTE = 60 * 1000;
+  var HOUR = 60 * MINUTE;
+  var DAY = 24 * HOUR;
+
+  var WEEKDAY_LABELS = ["一", "二", "三", "四", "五", "六", "日"];
+
+  /* ---------------- 时间工具 ---------------- */
+
+  function pad2(n) {
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  function dayKey(ts) {
+    var d = new Date(ts);
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+
+  function startOfDay(ts) {
+    var d = new Date(ts);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function addDays(ts, n) {
+    var d = new Date(ts);
+    d.setDate(d.getDate() + n);
+    return d.getTime();
+  }
+
+  function parseDayKey(key) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key == null ? "" : key));
+    if (!m) return NaN;
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function hashString(text) {
+    var h = 0;
+    var s = String(text == null ? "" : text);
+    for (var i = 0; i < s.length; i++) {
+      h = (h * 31 + s.charCodeAt(i)) | 0;
+    }
+    return h;
+  }
+
+  function splitDuration(ms) {
+    var total = Math.floor((Number(ms) || 0) / 1000);
+    if (total < 0) total = 0;
+    return {
+      days: Math.floor(total / 86400),
+      hours: Math.floor((total % 86400) / 3600),
+      minutes: Math.floor((total % 3600) / 60),
+      seconds: total % 60,
+      totalSeconds: total
+    };
+  }
+
+  function clockParts(ms) {
+    var d = splitDuration(ms);
+    return {
+      days: d.days,
+      clock: pad2(d.hours) + ":" + pad2(d.minutes) + ":" + pad2(d.seconds)
+    };
+  }
+
+  function formatDuration(ms) {
+    var d = splitDuration(ms);
+    if (d.days > 0) return d.days + " 天 " + d.hours + " 小时";
+    if (d.hours > 0) return d.hours + " 小时 " + d.minutes + " 分";
+    if (d.minutes > 0) return d.minutes + " 分 " + d.seconds + " 秒";
+    return d.seconds + " 秒";
+  }
+
+  function formatMoney(value) {
+    var v = Number(value) || 0;
+    if (v < 0) v = 0;
+    var parts = v.toFixed(2).split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return "¥" + parts.join(".");
+  }
+
+  /* ---------------- 习惯指标 ---------------- */
+
+  function currentStreakMs(habit, now) {
+    var t = now == null ? Date.now() : now;
+    if (!habit || !habit.cleanSince) return 0;
+    return Math.max(0, t - habit.cleanSince);
+  }
+
+  function bestStreakMs(habit, now) {
+    var stored = habit && habit.bestStreakMs ? habit.bestStreakMs : 0;
+    return Math.max(stored, currentStreakMs(habit, now));
+  }
+
+  function moneySaved(habit, now) {
+    return costTypeOf(habit) === "money" ? costAccum(habit, now) : 0;
+  }
+
+  function savedAmount(habit, now) {
+    return Math.floor(costAccum(habit, now));
+  }
+
+  /* ---------------- 代价维度：金钱 / 时间 / 自定义量 ---------------- */
+
+  function getCostType(key) {
+    for (var i = 0; i < COST_TYPES.length; i++) {
+      if (COST_TYPES[i].key === key) return COST_TYPES[i];
+    }
+    return COST_TYPES[0];
+  }
+
+  function costTypeOf(habit) {
+    var key = habit && habit.costType;
+    if (key === "money" || key === "time" || key === "custom") return key;
+    var cost = Number(habit && habit.dailyCost) || 0;
+    if (cost > 0) return "money";
+    var amount = Number(habit && habit.dailyAmount) || 0;
+    if (amount > 0) return (habit && habit.unit) === "小时" ? "time" : "custom";
+    return "money";
+  }
+
+  function costPerDay(habit) {
+    if (costTypeOf(habit) === "money") return Number(habit && habit.dailyCost) || 0;
+    return Number(habit && habit.dailyAmount) || 0;
+  }
+
+  function costUnit(habit) {
+    var type = costTypeOf(habit);
+    if (type === "money") return "元";
+    if (type === "time") return "小时";
+    return (habit && habit.unit) || "次";
+  }
+
+  function costAccum(habit, now) {
+    var perDay = costPerDay(habit);
+    if (perDay <= 0) return 0;
+    return (currentStreakMs(habit, now) / DAY) * perDay;
+  }
+
+  function formatCostValue(value, type, unit) {
+    var v = Number(value) || 0;
+    if (v < 0) v = 0;
+    if (type === "money") return formatMoney(v);
+    if (type === "time") return (v >= 100 ? Math.round(v) : Math.round(v * 10) / 10) + " " + (unit || "小时");
+    return Math.floor(v) + " " + (unit || "次");
+  }
+
+  function formatCost(habit, now) {
+    return formatCostValue(costAccum(habit, now), costTypeOf(habit), costUnit(habit));
+  }
+
+  function costLabels(habit) {
+    var type = costTypeOf(habit);
+    if (type === "money") return { short: "省下", long: "省下的钱" };
+    if (type === "time") return { short: "省回", long: "省回的时间" };
+    return { short: "减少", long: "少用的量" };
+  }
+
+  function timeEquivalent(value, type) {
+    if (type !== "time") return "";
+    var hours = Number(value) || 0;
+    if (hours >= 24) return "相当于 " + Math.round((hours / 24) * 10) / 10 + " 个整天";
+    if (hours >= 8) return "相当于 " + Math.floor(hours / 8) + " 个工作日";
+    return "";
+  }
+
+  function costBreakdown(habits, now) {
+    var out = { money: 0, hours: 0, custom: {} };
+    (habits || []).forEach(function (habit) {
+      var type = costTypeOf(habit);
+      var value = costAccum(habit, now);
+      if (value <= 0) return;
+      if (type === "money") out.money += value;
+      else if (type === "time") out.hours += value;
+      else {
+        var unit = costUnit(habit);
+        out.custom[unit] = (out.custom[unit] || 0) + value;
+      }
+    });
+    return out;
+  }
+
+  function urgeStats(habit) {
+    var urges = (habit && habit.urges) || [];
+    var resisted = 0;
+    urges.forEach(function (u) {
+      if (u.resisted !== false) resisted++;
+    });
+    return {
+      total: urges.length,
+      resisted: resisted,
+      gaveIn: urges.length - resisted,
+      rate: urges.length ? resisted / urges.length : 0
+    };
+  }
+
+  function triggerTally(habit) {
+    var map = {};
+    ((habit && habit.urges) || []).forEach(function (u) {
+      var key = (u.trigger || "未记录").trim() || "未记录";
+      if (!map[key]) map[key] = { trigger: key, total: 0, resisted: 0 };
+      map[key].total++;
+      if (u.resisted !== false) map[key].resisted++;
+    });
+    var list = [];
+    Object.keys(map).forEach(function (k) {
+      list.push(map[k]);
+    });
+    list.sort(function (a, b) {
+      return b.total - a.total || b.resisted - a.resisted;
+    });
+    return list;
+  }
+
+  function isCheckedIn(habit, ts) {
+    var list = (habit && habit.checkins) || [];
+    return list.indexOf(dayKey(ts == null ? Date.now() : ts)) !== -1;
+  }
+
+  /* ---------------- 补打卡配额 ---------------- */
+
+  /* 一个月内允许补打卡的次数（补打卡 = 给过去的日子补上） */
+  var BACKFILL_PER_MONTH = 5;
+
+  /* 某个月里动过几次历史（每次补打卡都会留一条 edits 记录） */
+  function monthEditCount(habit, year, month) {
+    var prefix = year + "-" + pad2(month + 1);
+    var count = 0;
+    ((habit && habit.edits) || []).forEach(function (edit) {
+      var at = edit && edit.at;
+      if (typeof at === "number" && isFinite(at) && dayKey(at).slice(0, 7) === prefix) count++;
+    });
+    return count;
+  }
+
+  function backfillQuota(habit, year, month, limit) {
+    var max = Number(limit) > 0 ? Number(limit) : BACKFILL_PER_MONTH;
+    var used = monthEditCount(habit, year, month);
+    return { used: used, limit: max, left: Math.max(0, max - used), allowed: used < max };
+  }
+
+  function checkinStats(habit, now) {
+    var set = {};
+    ((habit && habit.checkins) || []).forEach(function (k) {
+      set[k] = true;
+    });
+    var today = startOfDay(now == null ? Date.now() : now);
+    var monthPrefix = dayKey(today).slice(0, 7);
+    var total = 0;
+    var thisMonth = 0;
+    Object.keys(set).forEach(function (k) {
+      total++;
+      if (k.slice(0, 7) === monthPrefix) thisMonth++;
+    });
+
+    var run = 0;
+    var cursor = set[dayKey(today)] ? today : addDays(today, -1);
+    while (set[dayKey(cursor)]) {
+      run++;
+      cursor = addDays(cursor, -1);
+    }
+    return { total: total, thisMonth: thisMonth, run: run };
+  }
+
+  function totals(habits, now) {
+    var t = { count: 0, money: 0, hours: 0, customUnits: {}, urges: 0, resisted: 0, gaveIn: 0, relapses: 0, bestMs: 0, cleanDays: 0 };
+    var breakdown = costBreakdown(habits, now);
+    t.money = breakdown.money;
+    t.hours = breakdown.hours;
+    t.customUnits = breakdown.custom;
+    (habits || []).forEach(function (h) {
+      t.count++;
+      var us = urgeStats(h);
+      t.urges += us.total;
+      t.resisted += us.resisted;
+      t.gaveIn += us.gaveIn;
+      t.relapses += ((h.relapses) || []).length;
+      var best = bestStreakMs(h, now);
+      if (best > t.bestMs) t.bestMs = best;
+      t.cleanDays += Math.floor(currentStreakMs(h, now) / DAY);
+    });
+    t.rate = t.urges ? t.resisted / t.urges : 0;
+    return t;
+  }
+
+  function mergeTriggers(habits) {
+    var map = {};
+    (habits || []).forEach(function (h) {
+      triggerTally(h).forEach(function (row) {
+        if (!map[row.trigger]) map[row.trigger] = { trigger: row.trigger, total: 0, resisted: 0 };
+        map[row.trigger].total += row.total;
+        map[row.trigger].resisted += row.resisted;
+      });
+    });
+    var list = [];
+    Object.keys(map).forEach(function (k) {
+      list.push(map[k]);
+    });
+    list.sort(function (a, b) {
+      return b.total - a.total;
+    });
+    return list;
+  }
+
+  /* ---------------- 里程碑 ---------------- */
+
+  function sortedMilestones(habit) {
+    var list = (habit && habit.milestones) || [];
+    if (!list.length) {
+      var preset = getPreset(habit && habit.presetKey);
+      list = preset ? preset.milestones : getPreset("other").milestones;
+    }
+    return list.slice().sort(function (a, b) {
+      return a.ms - b.ms;
+    });
+  }
+
+  function milestoneProgress(habit, now) {
+    var list = sortedMilestones(habit);
+    var elapsed = currentStreakMs(habit, now);
+    var reached = [];
+    var next = null;
+    var prevMs = 0;
+    for (var i = 0; i < list.length; i++) {
+      if (elapsed >= list[i].ms) {
+        reached.push(list[i]);
+        prevMs = list[i].ms;
+      } else {
+        next = list[i];
+        break;
+      }
+    }
+    var progress = 1;
+    if (next) {
+      var span = next.ms - prevMs;
+      progress = span > 0 ? Math.min(1, Math.max(0, (elapsed - prevMs) / span)) : 0;
+    }
+    return {
+      list: list,
+      reached: reached,
+      next: next,
+      progress: progress,
+      elapsed: elapsed,
+      remainingMs: next ? Math.max(0, next.ms - elapsed) : 0
+    };
+  }
+
+  /* ---------------- 月历 / 年历 ---------------- */
+
+  function monthLabel(year, month) {
+    return year + " 年 " + (month + 1) + " 月";
+  }
+
+  function shiftMonth(year, month, delta) {
+    var d = new Date(year, month + delta, 1);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  }
+
+  function currentMonth(now) {
+    var d = new Date(now == null ? Date.now() : now);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  }
+
+  /* 某个月的打卡格，按周一开始补齐空位，长度一定是 7 的倍数 */
+  function monthGrid(habit, year, month, now) {
+    var today = startOfDay(now == null ? Date.now() : now);
+    var checkins = {};
+    ((habit && habit.checkins) || []).forEach(function (k) {
+      checkins[k] = true;
+    });
+    var urges = {};
+    var relapses = {};
+    ((habit && habit.urges) || []).forEach(function (u) {
+      var k = dayKey(u.at);
+      urges[k] = (urges[k] || 0) + 1;
+    });
+    ((habit && habit.relapses) || []).forEach(function (r) {
+      var k = dayKey(r.at);
+      relapses[k] = (relapses[k] || 0) + 1;
+    });
+
+    var lead = (new Date(year, month, 1).getDay() + 6) % 7; // 周一 = 0
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var cells = [];
+
+    for (var i = 0; i < lead; i++) cells.push({ blank: true, key: "lead-" + year + "-" + month + "-" + i });
+    for (var day = 1; day <= daysInMonth; day++) {
+      var ts = new Date(year, month, day).getTime();
+      var key = dayKey(ts);
+      var cell = {
+        blank: false,
+        day: day,
+        key: key,
+        ts: ts,
+        today: ts === today,
+        future: ts > today,
+        checkin: !!checkins[key],
+        urges: urges[key] || 0,
+        relapses: relapses[key] || 0
+      };
+      cell.level = cell.future
+        ? "future"
+        : cell.relapses
+        ? "relapse"
+        : cell.checkin
+        ? "done"
+        : cell.urges
+        ? "urge"
+        : "idle";
+      cells.push(cell);
+    }
+    while (cells.length % 7 !== 0) cells.push({ blank: true, key: "tail-" + year + "-" + month + "-" + cells.length });
+    return cells;
+  }
+
+  function monthStats(habit, year, month, now) {
+    var out = { checkins: 0, relapses: 0, urges: 0, days: 0 };
+    monthGrid(habit, year, month, now).forEach(function (cell) {
+      if (cell.blank) return;
+      out.days++;
+      if (cell.checkin) out.checkins++;
+      if (cell.relapses) out.relapses++;
+      out.urges += cell.urges;
+    });
+    return out;
+  }
+
+  /* 一整年：12 个月的格子 + 汇总 */
+  function yearOverview(habit, year, now) {
+    var months = [];
+    var checkins = 0;
+    var relapses = 0;
+    for (var m = 0; m < 12; m++) {
+      var cells = monthGrid(habit, year, m, now);
+      var stat = monthStats(habit, year, m, now);
+      checkins += stat.checkins;
+      relapses += stat.relapses;
+      months.push({ month: m, label: m + 1 + " 月", cells: cells, checkins: stat.checkins, relapses: stat.relapses });
+    }
+    var dates = [];
+    ((habit && habit.checkins) || []).forEach(function (key) {
+      if (key.slice(0, 4) === String(year)) dates.push(key);
+    });
+    dates.sort();
+    var longestRun = 0;
+    var run = 0;
+    var prevTs = null;
+    dates.forEach(function (key) {
+      var ts = parseDayKey(key);
+      if (!isFinite(ts)) return;
+      run = prevTs !== null && ts - prevTs === DAY ? run + 1 : 1;
+      prevTs = ts;
+      if (run > longestRun) longestRun = run;
+    });
+    return { year: year, months: months, checkins: checkins, relapses: relapses, longestRun: longestRun };
+  }
+
+  /* ---------------- 预设 ---------------- */
+
+  function ms(minutes) {
+    return minutes * MINUTE;
+  }
+
+  var PRESETS = [
+    {
+      key: "smoke",
+      name: "吸烟",
+      emoji: "🚬",
+      unit: "支",
+      costType: "money",
+      dailyCost: 20,
+      dailyAmount: 20,
+      sampleReason: "为了健康和家人",
+      milestones: [
+        { ms: ms(20), title: "20 分钟", desc: "心跳和血压开始回落" },
+        { ms: 8 * HOUR, title: "8 小时", desc: "血液中的一氧化碳回到正常水平" },
+        { ms: DAY, title: "1 天", desc: "心脏负担开始减轻，第一个整天达成" },
+        { ms: 2 * DAY, title: "2 天", desc: "味觉和嗅觉开始恢复" },
+        { ms: 3 * DAY, title: "3 天", desc: "尼古丁基本代谢完，最难熬的阶段过去" },
+        { ms: 7 * DAY, title: "1 周", desc: "气道放松，咳嗽和痰减少" },
+        { ms: 14 * DAY, title: "2 周", desc: "血液循环改善，走路没那么喘" },
+        { ms: 30 * DAY, title: "1 个月", desc: "肺功能提升，咳嗽、气短明显减少" },
+        { ms: 90 * DAY, title: "3 个月", desc: "肺功能通常可提升约 10%，体能变好" },
+        { ms: 180 * DAY, title: "半年", desc: "免疫水平回升，感冒次数变少" },
+        { ms: 365 * DAY, title: "1 年", desc: "冠心病风险降到吸烟者的一半左右" },
+        { ms: 5 * 365 * DAY, title: "5 年", desc: "中风风险接近从不吸烟的人" }
+      ]
+    },
+    {
+      key: "drink",
+      name: "饮酒",
+      emoji: "🍺",
+      unit: "杯",
+      costType: "money",
+      dailyCost: 15,
+      dailyAmount: 3,
+      sampleReason: "为了睡眠和第二天的状态",
+      milestones: [
+        { ms: ms(30), title: "30 分钟", desc: "身体开始代谢酒精" },
+        { ms: DAY, title: "1 天", desc: "肝脏卸下最急的负担" },
+        { ms: 3 * DAY, title: "3 天", desc: "睡眠更深，夜里醒来的次数减少" },
+        { ms: 7 * DAY, title: "1 周", desc: "血压更平稳，早起不再浮肿" },
+        { ms: 14 * DAY, title: "2 周", desc: "肝脏脂肪开始减少，精力回升" },
+        { ms: 30 * DAY, title: "1 个月", desc: "肝功能指标多数能有改善" },
+        { ms: 90 * DAY, title: "3 个月", desc: "体重、情绪和睡眠更稳定" },
+        { ms: 365 * DAY, title: "1 年", desc: "肝脏与心血管长期风险明显下降" }
+      ]
+    },
+    {
+      key: "night",
+      name: "熬夜",
+      emoji: "🌙",
+      unit: "小时",
+      costType: "time",
+      dailyCost: 0,
+      dailyAmount: 2,
+      sampleReason: "为了白天有精神",
+      milestones: [
+        { ms: ms(60), title: "第 1 晚", desc: "按时躺下，哪怕先睡不着" },
+        { ms: 3 * DAY, title: "3 晚", desc: "入睡变快，醒来没那么沉" },
+        { ms: 7 * DAY, title: "1 周", desc: "白天精力和专注力明显提升" },
+        { ms: 14 * DAY, title: "2 周", desc: "情绪更稳，皮肤状态改善" },
+        { ms: 30 * DAY, title: "1 个月", desc: "生物钟稳定，白天基本不犯困" },
+        { ms: 90 * DAY, title: "3 个月", desc: "免疫力与内分泌趋于稳定" },
+        { ms: 180 * DAY, title: "半年", desc: "长期心血管与代谢风险下降" }
+      ]
+    },
+    {
+      key: "phone",
+      name: "刷手机 / 短视频",
+      emoji: "📱",
+      unit: "小时",
+      costType: "time",
+      dailyCost: 0,
+      dailyAmount: 3,
+      sampleReason: "为了拿回自己的注意力",
+      milestones: [
+        { ms: ms(30), title: "半小时", desc: "你已经把一个冲动周期熬过去了" },
+        { ms: DAY, title: "1 天", desc: "完整一天不被信息流牵着走" },
+        { ms: 3 * DAY, title: "3 天", desc: "注意力开始回来，能读完长内容" },
+        { ms: 7 * DAY, title: "1 周", desc: "每天多出 1~2 小时可以自己支配" },
+        { ms: 14 * DAY, title: "2 周", desc: "睡前不再靠刷手机入睡" },
+        { ms: 30 * DAY, title: "1 个月", desc: "能连续深度工作或读完一本书" },
+        { ms: 90 * DAY, title: "3 个月", desc: "生活的节奏感和掌控感回来了" }
+      ]
+    },
+    {
+      key: "game",
+      name: "游戏",
+      emoji: "🎮",
+      unit: "小时",
+      costType: "time",
+      dailyCost: 0,
+      dailyAmount: 3,
+      sampleReason: "为了不被游戏安排作息",
+      milestones: [
+        { ms: ms(60), title: "1 小时", desc: "关掉那局，把时间还给自己" },
+        { ms: DAY, title: "1 天", desc: "一天没有被游戏占满" },
+        { ms: 3 * DAY, title: "3 天", desc: "手痒的次数开始减少" },
+        { ms: 7 * DAY, title: "1 周", desc: "作息回正，现实里的兴趣重新出现" },
+        { ms: 14 * DAY, title: "2 周", desc: "能以“玩一小时”的方式玩，而不是失控" },
+        { ms: 30 * DAY, title: "1 个月", desc: "时间分配重新由你决定" },
+        { ms: 90 * DAY, title: "3 个月", desc: "新的生活结构已经稳定下来" }
+      ]
+    },
+    {
+      key: "sugar",
+      name: "含糖饮料 / 甜食",
+      emoji: "🍬",
+      unit: "份",
+      costType: "money",
+      dailyCost: 8,
+      dailyAmount: 2,
+      sampleReason: "为了体重和精力",
+      milestones: [
+        { ms: ms(60), title: "1 小时", desc: "血糖波动带来的那阵馋劲过去了" },
+        { ms: DAY, title: "1 天", desc: "没给身体灌额外的糖" },
+        { ms: 3 * DAY, title: "3 天", desc: "对甜的敏感度回来了，白水也有味道" },
+        { ms: 7 * DAY, title: "1 周", desc: "皮肤和下午的精力都有改善" },
+        { ms: 14 * DAY, title: "2 周", desc: "体重和腰围开始有变化" },
+        { ms: 30 * DAY, title: "1 个月", desc: "血糖更稳，饭后犯困减轻" },
+        { ms: 90 * DAY, title: "3 个月", desc: "代谢指标（甘油三酯等）多有改善" }
+      ]
+    },
+    {
+      key: "self",
+      name: "自我安慰",
+      emoji: "🙈",
+      unit: "小时",
+      costType: "time",
+      dailyCost: 0,
+      dailyAmount: 1,
+      sampleReason: "为了把精力留给真正想做的事",
+      milestones: [
+        { ms: ms(20), title: "20 分钟", desc: "那阵冲动会自己退下去" },
+        { ms: DAY, title: "1 天", desc: "撑过第一次，身体会发现没有它也行" },
+        { ms: 3 * DAY, title: "3 天", desc: "冲动的间隔开始变长" },
+        { ms: 7 * DAY, title: "1 周", desc: "注意力和精力明显回升" },
+        { ms: 14 * DAY, title: "2 周", desc: "睡眠和情绪更稳，起床没那么累" },
+        { ms: 30 * DAY, title: "1 个月", desc: "对高强度刺激的依赖感下降" },
+        { ms: 90 * DAY, title: "3 个月", desc: "奖赏回路逐渐回到基线，日常的事也更有滋味" },
+        { ms: 180 * DAY, title: "半年", desc: "新的应对方式已经取代旧反应" },
+        { ms: 365 * DAY, title: "1 年", desc: "它不再左右你的情绪和精力" }
+      ]
+    },
+    {
+      key: "other",
+      name: "自定义",
+      emoji: "🎯",
+      unit: "次",
+      costType: "custom",
+      dailyCost: 0,
+      dailyAmount: 1,
+      sampleReason: "为了成为更想成为的那个人",
+      milestones: [
+        { ms: ms(30), title: "30 分钟", desc: "最汹涌的那一波冲动已经过去" },
+        { ms: DAY, title: "1 天", desc: "完整的第一个 24 小时" },
+        { ms: 3 * DAY, title: "3 天", desc: "身体和心理开始适应新的节奏" },
+        { ms: 7 * DAY, title: "1 周", desc: "最难的开头一周被你走完了" },
+        { ms: 14 * DAY, title: "2 周", desc: "新习惯开始取代旧的自动反应" },
+        { ms: 30 * DAY, title: "1 个月", desc: "旧习惯的神经回路正在变弱" },
+        { ms: 90 * DAY, title: "3 个月", desc: "新的生活方式基本成型" },
+        { ms: 180 * DAY, title: "半年", desc: "你已经不是靠意志力在硬撑了" },
+        { ms: 365 * DAY, title: "1 年", desc: "这件事不再是你的标签" }
+      ]
+    }
+  ];
+
+  function getPreset(key) {
+    for (var i = 0; i < PRESETS.length; i++) {
+      if (PRESETS[i].key === key) return PRESETS[i];
+    }
+    return null;
+  }
+
+  function presetMilestones(key) {
+    var preset = getPreset(key) || getPreset("other");
+    return preset.milestones.map(function (m) {
+      return { ms: m.ms, title: m.title, desc: m.desc };
+    });
+  }
+
+  var TRIGGERS = ["压力大", "无聊", "社交场合", "累了 / 没睡好", "情绪低", "习惯性动作", "看到相关东西", "饭后", "独处", "其他"];
+
+  var COST_TYPES = [
+    {
+      key: "money",
+      label: "金钱",
+      unit: "元",
+      fieldLabel: "每天花费（元）",
+      hint: "按每天少花的钱折算，适合烟、酒、含糖饮料这类要花钱的"
+    },
+    {
+      key: "time",
+      label: "时间",
+      unit: "小时",
+      fieldLabel: "每天占用（小时）",
+      hint: "按每天省回的时间折算，会自动换算成整天或工作日"
+    },
+    {
+      key: "custom",
+      label: "自定义量",
+      unit: "次",
+      fieldLabel: "每天的量",
+      hint: "按每天少用的数量折算，单位自己定（支 / 次 / 杯 / 局……）"
+    }
+  ];
+
+  var CRAVING_TIPS = [
+    "先喝一大杯凉水，慢慢喝完。",
+    "站起来走两分钟，去窗边透口气。",
+    "去刷个牙或者洗把脸，让口腔的感觉换个状态。",
+    "做 20 个深蹲或者俯卧撑，把那股劲用掉。",
+    "给一个朋友发条消息，随便聊两句。",
+    "离开当前的房间或座位，换个地方待 5 分钟。",
+    "把「我想……」这句话写下来，写完再决定。",
+    "嚼个口香糖，或者吃一片水果。",
+    "打开你记录的理由，把那段话读一遍。",
+    "倒数 60 秒，只做这一件事：等它过去。"
+  ];
+
+  var SLOGANS = [
+    "你现在忍住的每一分钟，都是在把决定权拿回来。",
+    "自由不是想做什么就做什么，是不想做什么就能不做。",
+    "想的时候先别做决定，等十分钟。",
+    "你不是在放弃什么，你是在把时间要回来。",
+    "冲动是客人，会来，也会走。",
+    "今天守住，明天就容易一点。",
+    "身体比嘴诚实，它在替你记账。",
+    "别和昨天比意志力，和昨天比记录。",
+    "破戒只需要一秒，坚持只需要再等一分钟。",
+    "别追求完美的一天，只要今天不用重来。",
+    "你没那么需要它，你只是习惯了那时候有它。",
+    "环境比意志力可靠：把东西拿走，比忍住容易。",
+    "累的时候最容易破功，先睡一觉，再决定。",
+    "把「就这一次」当成警报，它每次都这么说。",
+    "过去的天数不会消失，它们是你真正的资产。",
+    "想放弃的时候，先做一件小事：喝水、走动、洗把脸。",
+    "安静地赢，不需要向谁证明。",
+    "你不是意志力差，你只是还没给它设好边界。",
+    "每一次拒绝，都会让下一次更容易。",
+    "不必壮烈，只要稳定。",
+    "今天不欠自己。",
+    "习惯的力量很大，但它是可以被改写的。",
+    "慢一点没关系，别停。",
+    "给自己留证据：今天也记上一笔。",
+    "你要的不是那支烟，是那几分钟的放松。换种方式给自己。",
+    "别人看不见的那些坚持，最后都会长在你身上。",
+    "把目标写小一点：今天而已。",
+    "允许自己难受，但别让难受替你做决定。",
+    "戒断时不好受，是身体在恢复，不是你在失败。",
+    "胜人者有力，自胜者强。——《道德经》",
+    "君子役物，小人役于物。——《荀子》",
+    "不积跬步，无以至千里。——《荀子·劝学》",
+    "志不立，天下无可成之事。——王阳明",
+    "天下难事，必作于易；天下大事，必作于细。——《道德经》"
+  ];
+
+  function sloganForDay(pool, key, offset) {
+    var list = pool && pool.length ? pool : SLOGANS;
+    var seed = hashString(key) + (Number(offset) || 0);
+    return list[Math.abs(seed) % list.length];
+  }
+
+  var ENCOURAGEMENTS = [
+    "冲动平均只能坚持几分钟，你刚刚赢了它一轮。",
+    "每一次忍住，都是在把那条老回路削弱一点。",
+    "不用一直坚强，只要熬过这一波就够了。",
+    "你刚做了一件很难的事，记住这个感觉。",
+    "身体已经在悄悄恢复，只是它不会说谢谢。"
+  ];
+
+  var RELAPSE_MESSAGES = [
+    "一次复吸不等于失败，它是一次信息：我们要看清刚才发生了什么。",
+    "不用惩罚自己。把原因写下来，比自责有用得多。",
+    "大多数人都是试了好几次才戒掉的，你只是还在路上。",
+    "计时器归零了，但你学到的东西不会归零。"
+  ];
+
+  function pick(list, seed) {
+    if (!list || !list.length) return "";
+    var i = seed == null ? Math.floor(Math.random() * list.length) : Math.abs(seed) % list.length;
+    return list[i];
+  }
+
+  return {
+    MINUTE: MINUTE,
+    HOUR: HOUR,
+    DAY: DAY,
+    WEEKDAY_LABELS: WEEKDAY_LABELS,
+    BACKFILL_PER_MONTH: BACKFILL_PER_MONTH,
+    TRIGGERS: TRIGGERS,
+    COST_TYPES: COST_TYPES,
+    CRAVING_TIPS: CRAVING_TIPS,
+    SLOGANS: SLOGANS,
+    ENCOURAGEMENTS: ENCOURAGEMENTS,
+    RELAPSE_MESSAGES: RELAPSE_MESSAGES,
+    PRESETS: PRESETS,
+    pad2: pad2,
+    dayKey: dayKey,
+    parseDayKey: parseDayKey,
+    startOfDay: startOfDay,
+    addDays: addDays,
+    hashString: hashString,
+    splitDuration: splitDuration,
+    clockParts: clockParts,
+    formatDuration: formatDuration,
+    formatMoney: formatMoney,
+    currentStreakMs: currentStreakMs,
+    bestStreakMs: bestStreakMs,
+    getCostType: getCostType,
+    costTypeOf: costTypeOf,
+    costPerDay: costPerDay,
+    costUnit: costUnit,
+    costAccum: costAccum,
+    costLabels: costLabels,
+    formatCostValue: formatCostValue,
+    formatCost: formatCost,
+    timeEquivalent: timeEquivalent,
+    costBreakdown: costBreakdown,
+    moneySaved: moneySaved,
+    savedAmount: savedAmount,
+    urgeStats: urgeStats,
+    triggerTally: triggerTally,
+    isCheckedIn: isCheckedIn,
+    monthEditCount: monthEditCount,
+    backfillQuota: backfillQuota,
+    checkinStats: checkinStats,
+    totals: totals,
+    mergeTriggers: mergeTriggers,
+    sortedMilestones: sortedMilestones,
+    milestoneProgress: milestoneProgress,
+    monthLabel: monthLabel,
+    shiftMonth: shiftMonth,
+    currentMonth: currentMonth,
+    monthGrid: monthGrid,
+    monthStats: monthStats,
+    yearOverview: yearOverview,
+    getPreset: getPreset,
+    presetMilestones: presetMilestones,
+    sloganForDay: sloganForDay,
+    pick: pick
+  };
+});
+
+</script>
+    <script>
+/* glass.js — 液态玻璃（框架无关：一条 <script> + 一组 CSS 变量）
+ *
+ * 思路来自 Shu Ding 的 liquid-glass / liquid-diamond（SVG 位移滤镜那一路）：
+ *   1. 用 canvas 按元素自己的尺寸和圆角，逐像素算出一张位移贴图：
+ *      R 通道存 X 位移、G 通道存 Y 位移，0.5 表示不动；
+ *      "离边缘越近，采样点越往中心拉"，形成边缘的凸起折射；
+ *   2. 这张贴图交给 feDisplacementMap，作为 backdrop-filter 作用在元素背后；
+ *   3. 模糊和饱和度也放在滤镜内部，避免和 url() 抢同一条 backdrop-filter。
+ *
+ * 用法：容器加 .glass 类即可，脚本会自动扫描、按尺寸生成贴图，
+ *      尺寸变化（转屏、拉伸）时自动重算。
+ * 调参：CSS 变量 --lg-*（见 styles.css 的 :root）。
+ */
+(function () {
+  "use strict";
+
+  var FILTER_ID = "lg-refract";
+  var SVG_ID = "lg-glass-defs";
+  /* 贴图是一张平滑的位移场，不需要按屏幕像素精度来算：
+     限制采样密度可以显著降低每次重算的开销（切页时的"卡一下"就来自这里） */
+  var MAP_DPI = Math.min(1.5, window.devicePixelRatio || 1);
+  var MAP_MAX_WIDTH = 480;
+
+  var svg = null;
+  var feMap = null;
+  var feDisp = null;
+  var feBlur = null;
+  var feSat = null;
+  var current = null; // 当前贴图对应的签名，避免重复计算
+
+  /* ---------- 数学小工具（和参考实现一致） ---------- */
+
+  function clamp(value, min, max) {
+    return value < min ? min : value > max ? max : value;
+  }
+
+  function smoothStep(a, b, t) {
+    t = clamp((t - a) / (b - a), 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
+  /* 圆角矩形的有符号距离：内部为负、边缘为 0、外部为正 */
+  function roundedRectSDF(x, y, halfWidth, halfHeight, radius) {
+    var qx = Math.abs(x) - halfWidth + radius;
+    var qy = Math.abs(y) - halfHeight + radius;
+    var outside = Math.sqrt(Math.max(qx, 0) * Math.max(qx, 0) + Math.max(qy, 0) * Math.max(qy, 0));
+    return Math.min(Math.max(qx, qy), 0) + outside - radius;
+  }
+
+  function cssNumber(name, fallback) {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue(name);
+    var value = parseFloat(raw);
+    return isFinite(value) ? value : fallback;
+  }
+
+  /* ---------- 生成位移贴图 ---------- */
+
+  function buildMapData(width, height, radius, band, strength) {
+    var scaleToFit = Math.min(1, MAP_MAX_WIDTH / Math.max(1, width));
+    var dpi = MAP_DPI * scaleToFit;
+    var w = Math.max(1, Math.round(width * dpi));
+    var h = Math.max(1, Math.round(height * dpi));
+    var bandPx = Math.max(1, band * dpi);
+    var halfW = w / 2;
+    var halfH = h / 2;
+    var r = Math.min(radius * dpi, halfH, halfW);
+
+    var canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext("2d");
+    var image = ctx.createImageData(w, h);
+    var data = image.data;
+    var deltas = new Float32Array(w * h * 2);
+    var maxDelta = 0;
+
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var dx = x + 0.5 - halfW;
+        var dy = y + 0.5 - halfH;
+        var distance = -roundedRectSDF(dx, dy, halfW, halfH, r); // 距边缘的深度，内部为正
+        var weight = 1 - smoothStep(0, bandPx, distance); // 贴边处最强，深入内部衰减到 0
+        var pull = weight * strength;
+        var moveX = dx * -pull; // 朝中心拉
+        var moveY = dy * -pull;
+        var index = (y * w + x) * 2;
+        deltas[index] = moveX;
+        deltas[index + 1] = moveY;
+        var magnitude = Math.max(Math.abs(moveX), Math.abs(moveY));
+        if (magnitude > maxDelta) maxDelta = magnitude;
+      }
+    }
+
+    var scale = maxDelta > 0 ? maxDelta : 1;
+    for (var i = 0, p = 0; p < deltas.length; i += 4, p += 2) {
+      // 0.5 是"不动"，向两侧展开
+      data[i] = Math.round((deltas[p] / scale + 0.5) * 255);
+      data[i + 1] = Math.round((deltas[p + 1] / scale + 0.5) * 255);
+      data[i + 2] = 128;
+      data[i + 3] = 255;
+    }
+    ctx.putImageData(image, 0, 0);
+    return { url: canvas.toDataURL(), scale: scale / dpi };
+  }
+
+  /* ---------- SVG 滤镜 ---------- */
+
+  function ensureSvg() {
+    if (svg) return;
+    var NS = "http://www.w3.org/2000/svg";
+    svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("id", SVG_ID);
+    svg.setAttribute("width", "0");
+    svg.setAttribute("height", "0");
+    svg.setAttribute("aria-hidden", "true");
+    svg.style.cssText = "position:absolute;pointer-events:none";
+
+    var defs = document.createElementNS(NS, "defs");
+    var filter = document.createElementNS(NS, "filter");
+    filter.setAttribute("id", FILTER_ID);
+    filter.setAttribute("color-interpolation-filters", "sRGB");
+    filter.setAttribute("x", "-20%");
+    filter.setAttribute("y", "-20%");
+    filter.setAttribute("width", "140%");
+    filter.setAttribute("height", "140%");
+
+    feBlur = document.createElementNS(NS, "feGaussianBlur");
+    feBlur.setAttribute("in", "SourceGraphic");
+    feBlur.setAttribute("result", "BLURRED");
+    feBlur.setAttribute("stdDeviation", "0");
+
+    feSat = document.createElementNS(NS, "feColorMatrix");
+    feSat.setAttribute("type", "saturate");
+    feSat.setAttribute("values", "1");
+
+    feMap = document.createElementNS(NS, "feImage");
+    feMap.setAttribute("x", "0");
+    feMap.setAttribute("y", "0");
+    feMap.setAttribute("preserveAspectRatio", "none");
+    feMap.setAttribute("result", "MAP");
+
+    feDisp = document.createElementNS(NS, "feDisplacementMap");
+    feDisp.setAttribute("in", "BLURRED");
+    feDisp.setAttribute("in2", "MAP");
+    feDisp.setAttribute("xChannelSelector", "R");
+    feDisp.setAttribute("yChannelSelector", "G");
+    feDisp.setAttribute("scale", "0");
+
+    filter.appendChild(feBlur);
+    filter.appendChild(feSat);
+    filter.appendChild(feMap);
+    filter.appendChild(feDisp);
+    defs.appendChild(filter);
+    svg.appendChild(defs);
+    document.body.appendChild(svg);
+  }
+
+  function supportsBackdropUrl() {
+    if (!window.CSS || !CSS.supports) return false;
+    return CSS.supports("backdrop-filter", "url(#a)") || CSS.supports("-webkit-backdrop-filter", "url(#a)");
+  }
+
+  /* ---------- 应用到元素 ---------- */
+
+  function applyTo(el) {
+    ensureSvg();
+    var rect = el.getBoundingClientRect();
+    if (rect.width < 4 || rect.height < 4) return; // 还没布局
+
+    var radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+    var band = cssNumber("--lg-refract-band", 20);
+    var strength = cssNumber("--lg-refract-strength", 0.12);
+    var blur = cssNumber("--lg-blur", 14);
+    var saturate = cssNumber("--lg-saturate", 175) / 100;
+
+    // 尺寸按 4px 取整：滚动条出现之类造成的 1px 变化不值得重算贴图
+    var signature =
+      Math.round(rect.width / 4) * 4 +
+      "x" +
+      Math.round(rect.height / 4) * 4 +
+      ":" +
+      radius +
+      ":" +
+      band +
+      ":" +
+      strength +
+      ":" +
+      blur +
+      ":" +
+      saturate;
+    if (signature !== current) {
+      var map = buildMapData(rect.width, rect.height, radius, band, strength);
+      feMap.setAttribute("width", String(rect.width));
+      feMap.setAttribute("height", String(rect.height));
+      feMap.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.url);
+      feMap.setAttribute("href", map.url);
+      feDisp.setAttribute("scale", String(map.scale));
+      feBlur.setAttribute("stdDeviation", String(blur));
+      feSat.setAttribute("values", String(saturate));
+      current = signature;
+    }
+
+    if (supportsBackdropUrl()) {
+      // 模糊、饱和度、折射都在这个滤镜里完成（Chromium）
+      el.style.webkitBackdropFilter = "url(#" + FILTER_ID + ")";
+      el.style.backdropFilter = "url(#" + FILTER_ID + ")";
+    }
+  }
+
+  function scan() {
+    var nodes = document.querySelectorAll(".glass");
+    for (var i = 0; i < nodes.length; i++) applyTo(nodes[i]);
+  }
+
+  var scanTimer = null;
+  function scheduleScan() {
+    clearTimeout(scanTimer);
+    /* 等 350ms 再扫：切页签时胶囊正在做 380ms 的形变动画，
+       如果这时候重算位移贴图（要跑一遍 canvas 逐像素循环）会占住主线程、把动画卡掉。 */
+    scanTimer = setTimeout(scan, 350);
+  }
+
+  function start() {
+    if (!document.body) return;
+    scan();
+    window.addEventListener("resize", scheduleScan);
+    if (window.MutationObserver) {
+      // 只盯住 #app 的直接子节点：切页签会把底栏整个重建，这时要重新贴一次样式。
+      // 不递归观察子树，避免每秒计时器刷新也触发扫描。
+      var app = document.getElementById("app");
+      if (app) new MutationObserver(scheduleScan).observe(app, { childList: true });
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+
+  // 想手动调用也行（框架里可以只留这一段）
+  window.LiquidGlass = { apply: applyTo, refresh: scheduleScan, scan: scan };
+})();
+
+</script>
+    <script>
+/* app.js — 状态与界面层。数据全部保存在浏览器 localStorage，不联网。 */
+(function () {
+  "use strict";
+
+  var L = window.QuitLogic;
+  var STORAGE_KEY = "jieyin.v1";
+
+  /* ==================== 状态 ==================== */
+
+  function uid() {
+    return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function emptyState() {
+    return { version: 1, theme: "system", view: "home", activeId: null, habits: [], slogans: [] };
+  }
+
+  var ui = {
+    sloganOffset: 0,
+    monthCursor: null,
+    yearCursor: null,
+    milestonesOpen: false,
+    tabGeom: null,
+    tabTimer: null,
+    suppressTabClick: 0,
+    lastViewKey: null,
+    forceAnim: false,
+    pulse: null,
+    sloganAnim: false
+  };
+
+  function reduceMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  /* 轻微震动，让点按有实感（iPhone 不支持，会自动忽略） */
+  function tapFeedback(strong) {
+    if (!navigator.vibrate || reduceMotion()) return;
+    try {
+      navigator.vibrate(strong ? 16 : 7);
+    } catch (err) {
+      /* 忽略 */
+    }
+  }
+
+  var systemTheme = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  /* 主题三选一：黑 / 白 / 跟随系统 */
+  function resolvedTheme() {
+    if (state.theme === "light" || state.theme === "dark") return state.theme;
+    return systemTheme && systemTheme.matches ? "dark" : "light";
+  }
+
+  function currentHabit() {
+    return getHabit(state.activeId) || state.habits[0] || null;
+  }
+
+  function cursorMonth() {
+    return ui.monthCursor || L.currentMonth();
+  }
+
+  function cursorYear() {
+    return ui.yearCursor == null ? new Date().getFullYear() : ui.yearCursor;
+  }
+
+  function isNum(v) {
+    return typeof v === "number" && isFinite(v);
+  }
+
+  function normalizeSlogans(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).forEach(function (item) {
+      if (typeof item !== "string") return;
+      var text = item.trim().slice(0, 60);
+      if (text && out.indexOf(text) === -1) out.push(text);
+    });
+    return out.slice(0, 50);
+  }
+
+  function normalizeHabit(raw) {
+    raw = raw || {};
+    var preset = L.getPreset(raw.presetKey) || L.getPreset("other");
+    var milestones = Array.isArray(raw.milestones)
+      ? raw.milestones.filter(function (m) {
+          return m && isNum(m.ms) && m.title;
+        })
+      : [];
+    var habit = {
+      id: typeof raw.id === "string" && raw.id ? raw.id : uid(),
+      presetKey: typeof raw.presetKey === "string" ? raw.presetKey : preset.key,
+      name: typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : preset.name,
+      emoji: typeof raw.emoji === "string" && raw.emoji ? raw.emoji : preset.emoji,
+      unit: typeof raw.unit === "string" ? raw.unit : preset.unit,
+      dailyCost: isNum(Number(raw.dailyCost)) ? Math.max(0, Number(raw.dailyCost)) : 0,
+      dailyAmount: isNum(Number(raw.dailyAmount)) ? Math.max(0, Number(raw.dailyAmount)) : 0,
+      reason: typeof raw.reason === "string" ? raw.reason : "",
+      createdAt: isNum(raw.createdAt) ? raw.createdAt : Date.now(),
+      cleanSince: isNum(raw.cleanSince) ? raw.cleanSince : Date.now(),
+      bestStreakMs: isNum(raw.bestStreakMs) ? Math.max(0, raw.bestStreakMs) : 0,
+      milestones: milestones.length ? milestones : L.presetMilestones(preset.key),
+      urges: Array.isArray(raw.urges)
+        ? raw.urges
+            .filter(function (u) {
+              return u && isNum(u.at);
+            })
+            .map(function (u) {
+              return {
+                at: u.at,
+                trigger: typeof u.trigger === "string" ? u.trigger : "",
+                intensity: isNum(u.intensity) ? Math.min(5, Math.max(1, u.intensity)) : 3,
+                note: typeof u.note === "string" ? u.note : "",
+                resisted: u.resisted !== false
+              };
+            })
+        : [],
+      relapses: Array.isArray(raw.relapses)
+        ? raw.relapses
+            .filter(function (r) {
+              return r && isNum(r.at);
+            })
+            .map(function (r) {
+              return { at: r.at, note: typeof r.note === "string" ? r.note : "", streakMs: isNum(r.streakMs) ? r.streakMs : 0 };
+            })
+        : [],
+      checkins: Array.isArray(raw.checkins)
+        ? raw.checkins.filter(function (k) {
+            return typeof k === "string";
+          })
+        : [],
+      /* 补打卡的记录：只留"什么时候动了历史"，用来算每月的配额 */
+      edits: Array.isArray(raw.edits)
+        ? raw.edits
+            .filter(function (e) {
+              return e && isNum(e.at);
+            })
+            .map(function (e) {
+              return { at: e.at, key: typeof e.key === "string" ? e.key : "" };
+            })
+        : []
+    };
+    habit.costType = L.costTypeOf({ costType: raw.costType, dailyCost: habit.dailyCost, dailyAmount: habit.dailyAmount, unit: habit.unit });
+    return habit;
+  }
+
+  function load() {
+    var s = emptyState();
+    var raw;
+    try {
+      raw = window.localStorage.getItem(STORAGE_KEY);
+    } catch (err) {
+      console.warn("无法读取本地存储", err);
+      return s;
+    }
+    if (!raw) return s;
+    try {
+      var data = JSON.parse(raw);
+      if (!data || typeof data !== "object") return s;
+      s.theme = data.theme === "light" || data.theme === "dark" || data.theme === "system" ? data.theme : "system";
+      s.view = ["detail", "month", "year", "settings"].indexOf(data.view) >= 0 ? data.view : "home";
+      s.activeId = typeof data.activeId === "string" ? data.activeId : null;
+      s.habits = Array.isArray(data.habits) ? data.habits.map(normalizeHabit) : [];
+      s.slogans = normalizeSlogans(data.slogans);
+      return s;
+    } catch (err) {
+      console.warn("本地数据损坏，已忽略", err);
+      return s;
+    }
+  }
+
+  var state = load();
+
+  function save() {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          version: 1,
+          theme: state.theme,
+          view: state.view,
+          activeId: state.activeId,
+          habits: state.habits,
+          slogans: state.slogans
+        })
+      );
+      return true;
+    } catch (err) {
+      console.error("保存失败", err);
+      toast("保存失败：浏览器存储空间可能已满");
+      return false;
+    }
+  }
+
+  function getHabit(id) {
+    for (var i = 0; i < state.habits.length; i++) {
+      if (state.habits[i].id === id) return state.habits[i];
+    }
+    return null;
+  }
+
+  /* ==================== 工具 ==================== */
+
+  function $(sel, root) {
+    return (root || document).querySelector(sel);
+  }
+
+  function $$(sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+  }
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var toastTimer = null;
+  function toast(text) {
+    var el = $("#toast");
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      el.classList.remove("show");
+    }, 2600);
+  }
+
+  function toLocalInput(ts) {
+    var d = new Date(ts);
+    return (
+      d.getFullYear() + "-" + L.pad2(d.getMonth() + 1) + "-" + L.pad2(d.getDate()) + "T" + L.pad2(d.getHours()) + ":" + L.pad2(d.getMinutes())
+    );
+  }
+
+  function dateTimeText(ts) {
+    var d = new Date(ts);
+    return d.getFullYear() + "/" + L.pad2(d.getMonth() + 1) + "/" + L.pad2(d.getDate()) + " " + L.pad2(d.getHours()) + ":" + L.pad2(d.getMinutes());
+  }
+
+  function timerInner(habit, now) {
+    var parts = L.clockParts(L.currentStreakMs(habit, now));
+    return '<b class="t-days">' + parts.days + '</b><span class="t-unit">天</span><span class="t-clock">' + parts.clock + "</span>";
+  }
+
+  /* ==================== 数据操作 ==================== */
+
+  function toggleCheckin(id, ts) {
+    var habit = getHabit(id);
+    if (!habit) return;
+    var now = Date.now();
+    var key = L.dayKey(ts == null ? now : ts);
+    var todayKey = L.dayKey(now);
+
+    // 打卡后不能取消
+    if (habit.checkins.indexOf(key) !== -1) {
+      toast("已打卡，不能取消");
+      return;
+    }
+
+    var backfillLeft = null;
+    if (key !== todayKey) {
+      var cursor = L.parseDayKey(key);
+      if (!isNum(cursor)) return;
+      if (cursor > L.startOfDay(now)) {
+        toast(key + " 还没到，先过好今天");
+        return;
+      }
+      // 补打卡要走配额：每月 5 次
+      var stamp = new Date(now);
+      var quota = L.backfillQuota(habit, stamp.getFullYear(), stamp.getMonth());
+      if (!quota.allowed) {
+        toast("本月补打卡机会已用完（每月 " + quota.limit + " 次）");
+        return;
+      }
+      habit.edits.push({ at: now, key: key });
+      backfillLeft = quota.left - 1;
+    }
+
+    habit.checkins.push(key);
+    ui.pulse = { id: habit.id, key: key };
+    tapFeedback(true);
+    toast(
+      key === todayKey
+        ? "打卡完成：今天也守住了 💪"
+        : key + " 已补打卡 ✓" + (backfillLeft !== null ? "（本月还剩 " + backfillLeft + " 次）" : "")
+    );
+    save();
+    render();
+  }
+
+  function toggleDay(id, key) {
+    var ts = L.parseDayKey(key);
+    if (!isNum(ts)) return;
+    toggleCheckin(id, ts); // 未到日期、取消、配额都在里面处理
+  }
+
+  function addUrge(id, data) {
+    var habit = getHabit(id);
+    if (!habit) return null;
+    var rec = {
+      at: Date.now(),
+      trigger: String(data.trigger || "").trim(),
+      intensity: Math.min(5, Math.max(1, Number(data.intensity) || 3)),
+      note: String(data.note || "").trim(),
+      resisted: data.resisted !== false
+    };
+    habit.urges.push(rec);
+    save();
+    return rec;
+  }
+
+  function addRelapse(id, note) {
+    var habit = getHabit(id);
+    if (!habit) return null;
+    var streak = L.currentStreakMs(habit);
+    habit.bestStreakMs = Math.max(habit.bestStreakMs, streak);
+    var rec = { at: Date.now(), note: String(note || "").trim(), streakMs: streak };
+    habit.relapses.push(rec);
+    habit.cleanSince = Date.now();
+    save();
+    return rec;
+  }
+
+  function createHabit(data) {
+    var now = Date.now();
+    var habit = normalizeHabit({
+      id: uid(),
+      presetKey: data.presetKey,
+      name: data.name,
+      emoji: data.emoji,
+      unit: data.unit,
+      costType: data.costType,
+      dailyCost: data.dailyCost,
+      dailyAmount: data.dailyAmount,
+      reason: data.reason,
+      createdAt: now,
+      cleanSince: data.cleanSince || now,
+      milestones: L.presetMilestones(data.presetKey)
+    });
+    state.habits.unshift(habit);
+    save();
+    return habit;
+  }
+
+  function updateHabit(id, data) {
+    var habit = getHabit(id);
+    if (!habit) return;
+    habit.name = data.name;
+    habit.emoji = data.emoji;
+    habit.unit = data.unit;
+    habit.costType = data.costType;
+    habit.dailyCost = data.dailyCost;
+    habit.dailyAmount = data.dailyAmount;
+    habit.reason = data.reason;
+    habit.cleanSince = data.cleanSince;
+    save();
+  }
+
+  function deleteHabit(id) {
+    for (var i = 0; i < state.habits.length; i++) {
+      if (state.habits[i].id === id) {
+        state.habits.splice(i, 1);
+        break;
+      }
+    }
+    if (state.activeId === id) {
+      state.activeId = null;
+      state.view = "home";
+    }
+    save();
+    render(true);
+  }
+
+  function goHome() {
+    state.view = "home";
+    save();
+    render(true);
+  }
+
+  function goTo(view, id) {
+    state.view = view;
+    if (id !== undefined) state.activeId = id;
+    save();
+    render(true);
+  }
+
+  /* ==================== 弹窗 ==================== */
+
+  function openModal(html, opts) {
+    opts = opts || {};
+    var overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.innerHTML = '<div class="modal ' + (opts.size || "") + '">' + html + "</div>";
+    document.body.appendChild(overlay);
+    document.body.classList.add("modal-open");
+    if (opts.backdropClose !== false) {
+      overlay.addEventListener("mousedown", function (e) {
+        if (e.target === overlay) closeModal(overlay);
+      });
+    }
+    return overlay;
+  }
+
+  function closeModal(overlay) {
+    if (!overlay) return;
+    if (typeof overlay.__cleanup === "function") overlay.__cleanup();
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    if (!$(".overlay")) document.body.classList.remove("modal-open");
+  }
+
+  function closeTopModal() {
+    var all = $$(".overlay");
+    if (all.length) closeModal(all[all.length - 1]);
+  }
+
+  /* ==================== 自律标语 ==================== */
+
+  function sloganPool() {
+    return state.slogans.concat(L.SLOGANS);
+  }
+
+  function sloganHTML() {
+    return (
+      '<section class="card slogan">' +
+      '<span class="slogan-label">' + (ui.sloganOffset ? "换了一句" : "今日标语") + "</span>" +
+      '<p class="slogan-text' + (ui.sloganAnim ? " slogan-in" : "") + '">' + esc(L.sloganForDay(sloganPool(), L.dayKey(Date.now()), ui.sloganOffset)) + "</p>" +
+      '<div class="slogan-actions">' +
+      '<button class="link-btn" data-act="next-slogan">换一句</button>' +
+      '<button class="link-btn" data-act="manage-slogans">我的标语' +
+      (state.slogans.length ? "（" + state.slogans.length + "）" : "") +
+      "</button>" +
+      "</div></section>"
+    );
+  }
+
+  function sloganListHTML() {
+    if (!state.slogans.length) return '<p class="muted small">还没有自定义标语。写一句对自己最管用的话，它就会出现在首页和呼吸引导里。</p>';
+    return (
+      '<ul class="logs">' +
+      state.slogans
+        .map(function (text, index) {
+          return (
+            '<li><div><b>' +
+            esc(text) +
+            '</b></div><button class="btn ghost small-btn" data-slogan-del="' +
+            index +
+            '">删除</button></li>'
+          );
+        })
+        .join("") +
+      "</ul>"
+    );
+  }
+
+  function openSloganManager() {
+    var overlay = openModal(
+      "<h2>我的标语</h2>" +
+        '<p class="muted small">自己写的句子最管用。它们会和内置标语一起轮换出现在首页，也会出现在急救呼吸引导里。</p>' +
+        '<div data-slogan-list>' +
+        sloganListHTML() +
+        "</div>" +
+        '<label class="field"><span>添加一句</span><input type="text" data-new-slogan maxlength="60" placeholder="例如：撑过这一分钟就够了"></label>' +
+        '<div class="modal-foot">' +
+        '<button class="btn ghost" data-slogan="close">关闭</button>' +
+        '<button class="btn primary" data-slogan="add">添加</button>' +
+        "</div>",
+      {}
+    );
+
+    function refresh() {
+      $("[data-slogan-list]", overlay).innerHTML = sloganListHTML();
+    }
+
+    overlay.addEventListener("click", function (e) {
+      var del = e.target.closest("[data-slogan-del]");
+      if (del) {
+        state.slogans.splice(Number(del.getAttribute("data-slogan-del")), 1);
+        save();
+        refresh();
+        render();
+        toast("已删除");
+        return;
+      }
+      var btn = e.target.closest("[data-slogan]");
+      if (!btn) return;
+      if (btn.getAttribute("data-slogan") === "close") {
+        closeModal(overlay);
+        return;
+      }
+      var input = $("[data-new-slogan]", overlay);
+      var text = input.value.trim().slice(0, 60);
+      if (!text) {
+        toast("先写一句吧");
+        return;
+      }
+      if (state.slogans.indexOf(text) !== -1) {
+        toast("这句已经加过了");
+        return;
+      }
+      if (state.slogans.length >= 50) {
+        toast("最多存 50 句");
+        return;
+      }
+      state.slogans.push(text);
+      save();
+      input.value = "";
+      refresh();
+      render();
+      toast("已加入，会自动和内置标语轮换");
+    });
+  }
+
+  function presetButtonHTML(preset, attr) {
+    return (
+      '<button class="list-row" ' +
+      attr +
+      '><span class="row-tile">' +
+      preset.emoji +
+      '</span><span class="row-name">' +
+      esc(preset.name) +
+      '</span><span class="row-chev">›</span></button>'
+    );
+  }
+
+  function openPresetPicker() {
+    var overlay = openModal(
+      "<h2>添加戒断目标</h2>" +
+        '<p class="muted small">选一个开始。名称、图标和衡量标准进去之后都能改。</p>' +
+        '<div class="list">' +
+        L.PRESETS.map(function (preset) {
+          return presetButtonHTML(preset, 'data-pick="' + preset.key + '"');
+        }).join("") +
+        "</div>" +
+        '<div class="modal-foot"><button class="btn ghost" data-pick="cancel">取消</button></div>',
+      {}
+    );
+    overlay.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-pick]");
+      if (!btn) return;
+      var key = btn.getAttribute("data-pick");
+      closeModal(overlay);
+      if (key !== "cancel") openHabitForm(null, key);
+    });
+  }
+
+  function habitFormHTML(habit, preset) {
+    var name = habit ? habit.name : preset.name;
+    var emoji = habit ? habit.emoji : preset.emoji;
+    var unit = habit ? habit.unit : preset.unit;
+    var reason = habit ? habit.reason : preset.sampleReason;
+    var cleanSince = habit ? habit.cleanSince : Date.now();
+    var costType = L.costTypeOf(habit || preset);
+    var amount = L.costPerDay(habit || preset);
+    var segHTML = L.COST_TYPES.map(function (type) {
+      return (
+        '<button type="button" class="seg-btn' + (type.key === costType ? " active" : "") + '" data-type="' + type.key + '">' + type.label + "</button>"
+      );
+    }).join("");
+
+    return (
+      "<h2>" +
+      (habit ? "编辑目标" : "新的戒断目标") +
+      "</h2>" +
+      '<p class="muted small">这些信息只用来算数：计时、算你省回了什么，以及提醒你自己为什么开始。</p>' +
+      '<div class="form">' +
+      '<label class="field"><span>名称</span><input type="text" name="name" maxlength="24" value="' + esc(name) + '" placeholder="例如：吸烟 / 熬夜 / 刷短视频" required></label>' +
+      '<div class="field"><span>用什么标准衡量它占用的代价</span><div class="seg" data-cost-type>' + segHTML + "</div>" +
+      '<em class="hint" data-cost-hint></em></div>' +
+      '<div class="row"><label class="field"><span data-amount-label>每天的量</span><input type="number" name="amount" min="0" step="0.5" value="' + esc(amount) + '"></label>' +
+      '<label class="field" data-unit-field><span>计量单位</span><input type="text" name="unit" maxlength="6" value="' + esc(unit) + '" placeholder="支 / 次 / 杯"></label></div>' +
+      '<div class="row">' +
+      '<label class="field"><span>图标</span><input type="text" name="emoji" maxlength="4" value="' + esc(emoji) + '"></label>' +
+      '<label class="field"><span>开始时间</span><input type="datetime-local" name="cleanSince" value="' + toLocalInput(cleanSince) + '"><em class="hint">已经戒了一段时间就改成真正开始的那天</em></label>' +
+      "</div>" +
+      '<label class="field"><span>为什么想戒掉它</span><textarea name="reason" rows="3" maxlength="200" placeholder="想抽的时候会看到这句话">' + esc(reason) + "</textarea></label>" +
+      "</div>" +
+      '<div class="modal-foot">' +
+      '<button class="btn ghost" data-form="cancel">取消</button>' +
+      '<button class="btn primary" data-form="submit">' + (habit ? "保存" : "开始戒断") + "</button>" +
+      "</div>"
+    );
+  }
+
+  function openHabitForm(habitId, presetKey) {
+    var habit = habitId ? getHabit(habitId) : null;
+    var preset = habit ? L.getPreset(habit.presetKey) || L.getPreset("other") : L.getPreset(presetKey) || L.getPreset("other");
+    var overlay = openModal(habitFormHTML(habit, preset), {});
+    var form = $(".form", overlay);
+
+    function applyCostType(type) {
+      var meta = L.getCostType(type);
+      $$("[data-cost-type] .seg-btn", overlay).forEach(function (btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-type") === type);
+      });
+      $("[data-cost-hint]", overlay).textContent = meta.hint;
+      $("[data-amount-label]", overlay).textContent = meta.fieldLabel;
+      $("[data-unit-field]", overlay).style.display = type === "custom" ? "" : "none";
+      $('[name="amount"]', form).placeholder = type === "money" ? "例如 20" : type === "time" ? "例如 2" : "例如 3";
+    }
+
+    function collect() {
+      function val(sel) {
+        return $('[name="' + sel + '"]', form).value.trim();
+      }
+      var name = val("name");
+      if (!name) {
+        toast("给这个目标起个名字吧");
+        return null;
+      }
+      var activeSeg = $("[data-cost-type] .seg-btn.active", overlay);
+      var costType = activeSeg ? activeSeg.getAttribute("data-type") : "money";
+      var amount = Math.max(0, Number(val("amount")) || 0);
+      var timeValue = val("cleanSince");
+      var parsed = timeValue ? new Date(timeValue).getTime() : NaN;
+      return {
+        presetKey: habit ? habit.presetKey : preset.key,
+        name: name,
+        emoji: val("emoji") || preset.emoji,
+        costType: costType,
+        unit: costType === "time" ? "小时" : val("unit") || "次",
+        dailyCost: costType === "money" ? amount : 0,
+        dailyAmount: costType === "money" ? 0 : amount,
+        reason: val("reason"),
+        cleanSince: isNum(parsed) && parsed <= Date.now() + 60000 ? parsed : Date.now()
+      };
+    }
+
+    overlay.addEventListener("click", function (e) {
+      var seg = e.target.closest("[data-cost-type] .seg-btn");
+      if (seg) {
+        applyCostType(seg.getAttribute("data-type"));
+        return;
+      }
+      var btn = e.target.closest("[data-form]");
+      if (!btn) return;
+      var action = btn.getAttribute("data-form");
+      if (action === "cancel") {
+        closeModal(overlay);
+        return;
+      }
+      if (action === "submit") {
+        var data = collect();
+        if (!data) return;
+        if (habit) {
+          updateHabit(habit.id, data);
+          closeModal(overlay);
+          toast("已保存");
+          render();
+        } else {
+          var created = createHabit(data);
+          closeModal(overlay);
+          toast("开始计时，随时可以来记一笔 👊");
+          goTo("detail", created.id);
+        }
+      }
+    });
+
+    applyCostType(costTypeOfForm());
+
+    function costTypeOfForm() {
+      var active = $("[data-cost-type] .seg-btn.active", overlay);
+      return active ? active.getAttribute("data-type") : "money";
+    }
+  }
+
+  /* ==================== 冲动急救 ==================== */
+
+  function logFormHTML(habit) {
+    var chips = L.TRIGGERS.map(function (t) {
+      return '<button type="button" class="chip" data-trigger="' + esc(t) + '">' + esc(t) + "</button>";
+    }).join("");
+    return (
+      '<div class="sos-step">' +
+      "<h3>这一波是怎么来的？</h3>" +
+      '<p class="muted small">记清楚触发点，比靠意志力硬扛有用得多。</p>' +
+      '<div class="chips" data-chips>' +
+      chips +
+      "</div>" +
+      '<label class="field"><span>或者自己写一个</span><input type="text" data-custom maxlength="20" placeholder="例如：加班到很晚"></label>' +
+      '<label class="field"><span>冲动的强度：<b data-intensity-label>3</b> / 5</span><input type="range" min="1" max="5" step="1" value="3" data-intensity></label>' +
+      '<label class="field"><span>想对自己说点什么（可以不写）</span><textarea data-note rows="2" maxlength="120" placeholder="写下来，冲动会弱一点"></textarea></label>' +
+      '<div class="modal-foot">' +
+      '<button class="btn ghost" data-log="gavein">我没挺住</button>' +
+      '<button class="btn primary" data-log="resist">我挺过去了</button>' +
+      "</div>" +
+      "</div>"
+    );
+  }
+
+  function readLogForm(root) {
+    var selected = $(".chip.selected", root);
+    var custom = $("[data-custom]", root);
+    var trigger = (custom && custom.value.trim()) || (selected ? selected.getAttribute("data-trigger") : "") || "说不清";
+    var intensityEl = $("[data-intensity]", root);
+    var noteEl = $("[data-note]", root);
+    return {
+      trigger: trigger,
+      intensity: intensityEl ? Number(intensityEl.value) : 3,
+      note: noteEl ? noteEl.value : ""
+    };
+  }
+
+  function wireLogForm(root, habit) {
+    $$(".chip", root).forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var isSelected = chip.classList.contains("selected");
+        $$(".chip", root).forEach(function (c) {
+          c.classList.remove("selected");
+        });
+        if (!isSelected) chip.classList.add("selected");
+      });
+    });
+    var range = $("[data-intensity]", root);
+    var label = $("[data-intensity-label]", root);
+    if (range && label) {
+      range.addEventListener("input", function () {
+        label.textContent = range.value;
+      });
+    }
+  }
+
+  function resistResultHTML(habit, entry, streakBefore) {
+    var stats = L.urgeStats(habit);
+    return (
+      '<div class="result">' +
+      '<div class="result-icon">💪</div>' +
+      "<h3>你赢了这一轮</h3>" +
+      '<p class="muted">' +
+      esc(L.pick(L.ENCOURAGEMENTS)) +
+      "</p>" +
+      '<ul class="facts">' +
+      "<li>触发因素：<b>" + esc(entry.trigger) + "</b>（强度 " + entry.intensity + "/5）</li>" +
+      "<li>你已经坚持了 <b>" + L.formatDuration(streakBefore) + "</b></li>" +
+      "<li>到目前为止，你一共扛住了 <b>" + stats.resisted + "</b> 次冲动</li>" +
+      "</ul>" +
+      '<div class="modal-foot"><button class="btn primary" data-log="close">继续</button></div>' +
+      "</div>"
+    );
+  }
+
+  function gaveInResultHTML(habit, entry, relapse) {
+    return (
+      '<div class="result">' +
+      '<div class="result-icon">🩹</div>' +
+      "<h3>没关系，先记下来</h3>" +
+      '<p class="muted">' + esc(L.pick(L.RELAPSE_MESSAGES)) + "</p>" +
+      '<ul class="facts">' +
+      "<li>这一次之前，你坚持了 <b>" + L.formatDuration(relapse.streakMs) + "</b>" +
+      (relapse.streakMs >= habit.bestStreakMs ? "（新纪录，已经写进最长记录）" : "") +
+      "</li>" +
+      "<li>触发因素：<b>" + esc(entry.trigger) + "</b>（强度 " + entry.intensity + "/5）</li>" +
+      "<li>下次遇到「" + esc(entry.trigger) + "」，先做一次一分钟呼吸，再来决定。</li>" +
+      "</ul>" +
+      '<div class="modal-foot"><button class="btn primary" data-log="close">重新开始计时</button></div>' +
+      "</div>"
+    );
+  }
+
+  function openSOS(habitId) {
+    var habit = getHabit(habitId);
+    if (!habit) return;
+    var tip = L.pick(L.CRAVING_TIPS);
+    var overlay = openModal(
+      "<h2>现在很想" + esc(habit.name) + "？</h2>" +
+        '<p class="muted small">冲动像海浪，会涨也会退。我们只需要先撑过这一分钟，然后再决定。</p>' +
+        '<div class="tip">' + esc(tip) + "</div>" +
+        '<ul class="facts">' +
+        "<li>先做一分钟呼吸，让身体从紧绷里退出来</li>" +
+        "<li>记下是什么引爆了它</li>" +
+        "<li>最后再决定要不要真的破戒</li>" +
+        "</ul>" +
+        '<div class="modal-foot">' +
+        '<button class="btn ghost" data-sos="skip">跳过呼吸，直接记录</button>' +
+        '<button class="btn primary" data-sos="start">开始一分钟呼吸</button>' +
+        "</div>",
+      { backdropClose: false }
+    );
+
+    var timers = [];
+    overlay.__cleanup = function () {
+      timers.forEach(clearTimeout);
+      timers = [];
+    };
+
+    function logStep() {
+      var wrap = document.createElement("div");
+      wrap.innerHTML = logFormHTML(habit);
+      overlay.innerHTML = '<div class="modal-body">' + wrap.innerHTML + "</div>";
+      wireLogForm(overlay, habit);
+    }
+
+    function breathStep() {
+      overlay.innerHTML =
+        '<div class="modal-body">' +
+        '<h3 class="center">跟着圆圈呼吸</h3>' +
+        '<div class="breath-wrap"><div class="breath-circle" data-circle><span data-phase>准备</span></div></div>' +
+        '<p class="center muted small" data-round>第 1 / 3 轮 · 吸气 4 秒，屏住 7 秒，呼气 8 秒</p>' +
+        '<p class="center small slogan-inline">' + esc(L.pick(sloganPool())) + "</p>" +
+        '<div class="modal-foot"><button class="btn ghost" data-sos="skip">跳过</button></div>' +
+        "</div>";
+
+      var circle = $("[data-circle]", overlay);
+      var phaseEl = $("[data-phase]", overlay);
+      var roundEl = $("[data-round]", overlay);
+      var phases = [
+        { label: "吸气", secs: 4, scale: 1.35 },
+        { label: "屏住", secs: 7, scale: 1.35 },
+        { label: "呼气", secs: 8, scale: 1 }
+      ];
+      var round = 0;
+      var index = 0;
+
+      function run() {
+        if (round >= 3) {
+          phaseEl.textContent = "很好";
+          logStep();
+          return;
+        }
+        var phase = phases[index];
+        phaseEl.textContent = phase.label + " " + phase.secs;
+        circle.style.transitionDuration = phase.secs + "s";
+        circle.style.transform = "scale(" + phase.scale + ")";
+        timers.push(
+          setTimeout(function () {
+            index++;
+            if (index >= phases.length) {
+              index = 0;
+              round++;
+              if (roundEl) roundEl.textContent = "第 " + Math.min(round + 1, 3) + " / 3 轮 · 你已经撑过 " + round * 19 + " 秒";
+            }
+            run();
+          }, phase.secs * 1000)
+        );
+      }
+
+      circle.style.transitionDuration = "0s";
+      circle.style.transform = "scale(1)";
+      timers.push(
+        setTimeout(function () {
+          run();
+        }, 60)
+      );
+    }
+
+    overlay.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-sos],[data-log]");
+      if (!btn) return;
+      var sos = btn.getAttribute("data-sos");
+      if (sos === "start") {
+        breathStep();
+        return;
+      }
+      if (sos === "skip") {
+        logStep();
+        return;
+      }
+      var action = btn.getAttribute("data-log");
+      if (action === "close") {
+        closeModal(overlay);
+        return;
+      }
+      var entry = readLogForm(overlay);
+      var wrap = $(".modal-body", overlay) || overlay;
+      if (action === "resist") {
+        var streakBefore = L.currentStreakMs(habit);
+        addUrge(habit.id, { trigger: entry.trigger, intensity: entry.intensity, note: entry.note, resisted: true });
+        if (!L.isCheckedIn(habit, Date.now())) {
+          habit.checkins.push(L.dayKey(Date.now()));
+          save();
+        }
+        wrap.innerHTML = resistResultHTML(habit, entry, streakBefore);
+        toast("扛过去一次，今天也帮你打卡了");
+      } else {
+        addUrge(habit.id, { trigger: entry.trigger, intensity: entry.intensity, note: entry.note, resisted: false });
+        var relapse = addRelapse(habit.id, entry.note);
+        wrap.innerHTML = gaveInResultHTML(habit, entry, relapse);
+      }
+      render();
+    });
+  }
+
+  function openRelapse(habitId) {
+    var habit = getHabit(habitId);
+    if (!habit) return;
+    var overlay = openModal(
+      "<h2>记录一次复吸</h2>" +
+        '<p class="muted small">计时会重新开始，但你已经坚持的记录会保留在「最长记录」里。</p>' +
+        '<label class="field"><span>当时发生了什么？（写下它，下次就有准备）</span><textarea data-note rows="3" maxlength="160" placeholder="例如：和客户应酬，喝了两杯之后没忍住"></textarea></label>' +
+        '<div class="modal-foot"><button class="btn ghost" data-re="cancel">取消</button><button class="btn danger" data-re="ok">确认，重新开始</button></div>',
+      {}
+    );
+    overlay.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-re]");
+      if (!btn) return;
+      if (btn.getAttribute("data-re") === "cancel") {
+        closeModal(overlay);
+        return;
+      }
+      var noteEl = $("[data-note]", overlay);
+      addRelapse(habit.id, noteEl ? noteEl.value : "");
+      closeModal(overlay);
+      toast("记录好了，重新开始计时");
+      render();
+    });
+  }
+
+  /* ==================== 视图 ==================== */
+
+  /* 每个页签两套图标：未选中用描边（对应 SF Symbols 的无后缀版本），
+     选中用实心（对应 .fill 版本），和苹果 tab bar 的处理一致 */
+  var TABS = [
+    {
+      key: "home",
+      label: "打卡",
+      outline: '<circle cx="12" cy="12" r="8.6"/><path d="M8.2 12.4l2.7 2.6 5-5.6"/>',
+      solid:
+        "<mask id='lg-ic-home'><rect width='24' height='24' fill='#fff'/>" +
+        "<path d='M8.2 12.4l2.7 2.6 5-5.6' fill='none' stroke='#000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></mask>" +
+        "<circle cx='12' cy='12' r='9' fill='currentColor' stroke='none' mask='url(#lg-ic-home)'/>"
+    },
+    {
+      key: "month",
+      label: "月",
+      outline:
+        '<rect x="3.6" y="5" width="16.8" height="15" rx="3.2"/><path d="M3.6 9.6h16.8M8.2 3.4v3.2M15.8 3.4v3.2"/><path d="M7.6 13.4h1.2M11.4 13.4h1.2M15.2 13.4h1.2M7.6 16.6h1.2M11.4 16.6h1.2"/>',
+      solid:
+        "<mask id='lg-ic-month'><rect width='24' height='24' fill='#fff'/>" +
+        "<path d='M3.6 9.7h16.8' stroke='#000' stroke-width='1.5'/>" +
+        "<rect x='7.4' y='12.6' width='2.3' height='2.3' rx='0.7' fill='#000'/>" +
+        "<rect x='10.9' y='12.6' width='2.3' height='2.3' rx='0.7' fill='#000'/>" +
+        "<rect x='14.4' y='12.6' width='2.3' height='2.3' rx='0.7' fill='#000'/>" +
+        "<rect x='7.4' y='16.1' width='2.3' height='2.3' rx='0.7' fill='#000'/></mask>" +
+        "<rect x='3.6' y='5' width='16.8' height='15' rx='3.4' fill='currentColor' stroke='none' mask='url(#lg-ic-month)'/>" +
+        "<rect x='7.6' y='3.2' width='1.7' height='3.2' rx='0.85' fill='currentColor' stroke='none'/>" +
+        "<rect x='14.7' y='3.2' width='1.7' height='3.2' rx='0.85' fill='currentColor' stroke='none'/>"
+    },
+    {
+      key: "year",
+      label: "年",
+      /* 和选中态用同一套柱状形状，只是描边 / 实心之分 */
+      outline: "<rect x='5' y='12.5' width='4' height='7.5' rx='2'/><rect x='10' y='6' width='4' height='14' rx='2'/><rect x='15' y='9.5' width='4' height='10.5' rx='2'/>",
+      solid:
+        "<rect x='5' y='12.5' width='4' height='7.5' rx='2' fill='currentColor' stroke='none'/>" +
+        "<rect x='10' y='6' width='4' height='14' rx='2' fill='currentColor' stroke='none'/>" +
+        "<rect x='15' y='9.5' width='4' height='10.5' rx='2' fill='currentColor' stroke='none'/>"
+    },
+    {
+      key: "settings",
+      label: "设置",
+      outline:
+        '<path d="M4 7.4h9M18.4 7.4h2.2M4 16.6h4.6M13.6 16.6h6.8"/><circle cx="15.7" cy="7.4" r="2.1"/><circle cx="11" cy="16.6" r="2.1"/>',
+      solid:
+        "<rect x='3.4' y='8.1' width='17.2' height='1.9' rx='0.95' fill='currentColor' stroke='none'/>" +
+        "<rect x='3.4' y='14.1' width='17.2' height='1.9' rx='0.95' fill='currentColor' stroke='none'/>" +
+        "<circle cx='15.2' cy='9.05' r='3.1' fill='currentColor' stroke='none'/>" +
+        "<circle cx='8.8' cy='15.05' r='3.1' fill='currentColor' stroke='none'/>"
+    }
+  ];
+
+  var PLUS_ICON = '<path d="M12 6.2v11.6M6.2 12h11.6" stroke-width="2.3" stroke-linecap="round"/>';
+
+  function barTitle() {
+    if (state.view === "month") return "月记录";
+    if (state.view === "year") return "年记录";
+    if (state.view === "settings") return "设置";
+    if (state.view === "detail") {
+      var habit = getHabit(state.activeId);
+      if (habit) return habit.emoji + " " + habit.name;
+    }
+    return "解瘾";
+  }
+
+  /* 顶部只留一条细标题栏（左右对称占位，标题真居中） */
+  function topbarHTML() {
+    return (
+      '<header class="topbar">' +
+      '<span class="bar-side"></span>' +
+      '<span class="bar-title">' +
+      esc(barTitle()) +
+      "</span>" +
+      '<span class="bar-side"></span>' +
+      "</header>"
+    );
+  }
+
+  /* 底部悬浮的导航栏（苹果那种半透明玻璃质感） */
+  function tabbarHTML() {
+    var unfinished = state.habits.some(function (habit) {
+      return !L.isCheckedIn(habit, Date.now());
+    });
+
+    var items = TABS.map(function (tab, index) {
+      var active = state.view === tab.key || (tab.key === "home" && state.view === "detail");
+      var badge = tab.key === "home" && unfinished && state.habits.length ? '<span class="tab-badge"></span>' : "";
+      var button =
+        '<button class="tab-btn' +
+        (active ? " active" : "") +
+        '" data-act="nav" data-view="' +
+        tab.key +
+        '"' +
+        (active ? ' aria-current="page"' : "") +
+        ' aria-label="' +
+        esc(tab.label) +
+        '">' +
+        '<span class="tab-glyph">' +
+        '<svg class="tab-icon icon-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+        tab.outline +
+        "</svg>" +
+        '<svg class="tab-icon icon-solid" viewBox="0 0 24 24" fill="currentColor" stroke="none">' +
+        tab.solid +
+        "</svg>" +
+        badge +
+        "</span></button>";
+      // 中间插一个圆形的「+」玻璃按钮（对应参考里的 create）
+      if (index === 2) {
+        button =
+          '<button class="tab-create" data-act="new-habit" aria-label="添加戒断目标">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+          PLUS_ICON +
+          "</svg></button>" +
+          button;
+      }
+      return button;
+    }).join("");
+    return (
+      '<nav class="tabbar glass" aria-label="主导航">' +
+      '<span class="tab-indicator" aria-hidden="true"><span class="tab-indicator-inner"></span></span>' +
+      items +
+      "</nav>"
+    );
+  }
+
+  /* 液态玻璃：高亮胶囊会从左滑到右，拖动底栏松手也能切 */
+  function setupTabbar() {
+    var bar = $(".tabbar");
+    if (!bar) return;
+    var indicator = $(".tab-indicator", bar);
+    var buttons = $$(".tab-btn", bar);
+    if (!indicator || buttons.length < 2) return;
+
+    var activeIndex = 0;
+    var i;
+    for (i = 0; i < buttons.length; i++) {
+      if (buttons[i].classList.contains("active")) activeIndex = i;
+    }
+
+    function limit(value, min, max) {
+      return value < min ? min : value > max ? max : value;
+    }
+
+    /* 胶囊的坐标原点在栏的 padding box 左上角，按钮的位置要用实测值，
+       否则会差出一个内边距，第一个格溢出、最后一格短一块 */
+    function originX() {
+      return bar.getBoundingClientRect().left + bar.clientLeft;
+    }
+
+    function spanOf(index) {
+      var rect = buttons[index].getBoundingClientRect();
+      return { offset: rect.left - originX(), width: rect.width };
+    }
+
+    function maxOffset() {
+      return Math.max(0, bar.clientWidth - lensWidth());
+    }
+
+    function lensWidth() {
+      return indicator.getBoundingClientRect().width;
+    }
+
+    function geometry(index) {
+      var span = spanOf(index);
+      var width = lensWidth();
+      var offset = span.offset + (span.width - width) / 2;
+      return {
+        index: index,
+        offset: limit(offset, 0, maxOffset()),
+        width: width
+      };
+    }
+
+    function paint(geom) {
+      indicator.style.transform = "translate3d(" + geom.offset + "px, 0, 0)";
+    }
+
+    /* 不带过渡地直接放到目标位置（首次渲染、旋转屏幕时用） */
+    function place(index) {
+      indicator.style.transition = "none";
+      paint(geometry(index, false));
+      void indicator.offsetWidth; // 强制回流，让位置立刻生效
+      indicator.style.transition = "";
+    }
+
+    function centerOf(index) {
+      var span = spanOf(index);
+      return span.offset + span.width / 2;
+    }
+
+    function nearestIndex(offset, width) {
+      var center = offset + width / 2;
+      var best = 0;
+      var bestDistance = Infinity;
+      for (var k = 0; k < buttons.length; k++) {
+        var distance = Math.abs(centerOf(k) - center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = k;
+        }
+      }
+      return best;
+    }
+
+    /* 手指落在哪一格上（指针捕获之后浏览器不再把 click 派发给按钮，点按要自己算） */
+    function indexAtX(x) {
+      for (var k = 0; k < buttons.length; k++) {
+        var span = spanOf(k);
+        if (x >= span.offset && x <= span.offset + span.width) return k;
+      }
+      var width = spanOf(0).width;
+      return nearestIndex(limit(x - width / 2, 0, maxOffset()), width); // 落在间隙里就取最近的一格
+    }
+
+    /* 换页时：先从旧位置拉伸着滑过去，再收拢落位 */
+    var previous = ui.tabGeom;
+    var shouldAnimate = previous && previous.index !== activeIndex;
+    if (shouldAnimate) {
+      indicator.style.transition = "none";
+      paint(previous);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          indicator.style.transition = "";
+          paint(geometry(activeIndex));
+        });
+      });
+    } else {
+      place(activeIndex);
+    }
+    ui.tabGeom = geometry(activeIndex);
+
+    bar.__sync = function () {
+      place(activeIndex);
+      ui.tabGeom = geometry(activeIndex);
+    };
+
+    bar.addEventListener("pointermove", function (event) {
+      var rect = bar.getBoundingClientRect();
+      bar.style.setProperty("--pointer-x", (event.clientX - rect.left) + "px");
+      bar.style.setProperty("--pointer-y", (event.clientY - rect.top) + "px");
+    });
+
+    bar.addEventListener("pointerleave", function () {
+      bar.style.setProperty("--pointer-x", "50%");
+      bar.style.setProperty("--pointer-y", "50%");
+    });
+
+    /* ---- 拖动底栏 ---- */
+    var startX = 0;
+    var startOffset = 0;
+    var dragging = false;
+    var moved = false;
+
+    bar.addEventListener("pointerdown", function (event) {
+      if (event.button) return;
+      startX = event.clientX;
+      startOffset = indicator.getBoundingClientRect().left - bar.getBoundingClientRect().left - bar.clientLeft;
+      dragging = true;
+      moved = false;
+      indicator.style.transition = "none";
+      if (bar.setPointerCapture) bar.setPointerCapture(event.pointerId);
+    });
+
+    bar.addEventListener("pointermove", function (event) {
+      if (!dragging) return;
+      var dx = event.clientX - startX;
+      if (!moved && Math.abs(dx) < 6) return;
+      moved = true;
+      bar.classList.add("dragging");
+      var geom = {
+        offset: limit(startOffset + dx, 0, maxOffset()),
+        width: lensWidth()
+      };
+      paint(geom);
+      var near = nearestIndex(geom.offset, geom.width);
+      for (var k = 0; k < buttons.length; k++) {
+        buttons[k].classList.toggle("near", k === near);
+      }
+    });
+
+    function endDrag(event) {
+      if (!dragging) return;
+      dragging = false;
+      indicator.style.transition = "";
+      bar.classList.remove("dragging");
+      for (var k = 0; k < buttons.length; k++) buttons[k].classList.remove("near");
+      var width = lensWidth();
+
+      if (!moved) {
+        // 点按：按松手位置判断点了哪一格
+        // 指针捕获会把事件目标换成栏本身，所以按坐标找手指下面真正是什么
+        var under = document.elementFromPoint ? document.elementFromPoint(event.clientX, event.clientY) : null;
+        var createHit = under && under.closest ? under.closest(".tab-create") : null;
+        var tapIndex = indexAtX(event.clientX - bar.getBoundingClientRect().left - bar.clientLeft);
+        place(activeIndex);
+        if (createHit) {
+          // 指针捕获之后浏览器不再把 click 交给按钮，这里自己接住「+」
+          ui.suppressTabClick = Date.now() + 400;
+          openPresetPicker();
+          return;
+        }
+        // 在习惯详情页时，点「打卡」也要回到列表，所以不能只比“是否当前页签”
+        if (tapIndex !== activeIndex || state.view === "detail") goTo(TABS[tapIndex].key);
+        return;
+      }
+
+      var offset = limit(startOffset + (event.clientX - startX), 0, maxOffset());
+      var index = nearestIndex(offset, width);
+      ui.suppressTabClick = Date.now() + 500;
+      ui.tabGeom = { index: index, offset: offset, width: width };
+      paint(ui.tabGeom);
+      if (index === activeIndex && state.view !== "detail") {
+        render(); // 弹回原位
+      } else {
+        goTo(TABS[index].key);
+      }
+    }
+
+    bar.addEventListener("pointerup", endDrag);
+    bar.addEventListener("pointercancel", endDrag);
+  }
+
+  /* 首页一行一个习惯：点左边进详情，点右边直接打卡 */
+  function habitRowHTML(habit, now) {
+    var checked = L.isCheckedIn(habit, now);
+    var justChecked = ui.pulse && ui.pulse.id === habit.id && ui.pulse.key === L.dayKey(now);
+    return (
+      '<div class="row-habit' + (checked ? " checked" : "") + (justChecked ? " just-checked" : "") + '">' +
+      '<button class="row-main" data-act="open-habit" data-id="' + habit.id + '">' +
+      '<span class="habit-emoji">' + esc(habit.emoji) + "</span>" +
+      '<span class="row-text"><b>' + esc(habit.name) + '</b><span class="muted small" data-live="streak-text" data-id="' + habit.id + '">' + esc(habitSubText(habit, now)) + "</span></span>" +
+      "</button>" +
+      '<button class="btn check-btn ' + (checked ? "ok" : "primary") + '" data-act="toggle-checkin" data-id="' + habit.id + '">' +
+      (checked ? "✓ 已打卡" : "打卡") +
+      "</button>" +
+      "</div>"
+    );
+  }
+
+  function habitSubText(habit, now) {
+    var text = "已坚持 " + L.formatDuration(L.currentStreakMs(habit, now));
+    var cost = L.costAccum(habit, now);
+    if (cost > 0) text += " · " + L.costLabels(habit).short + " " + L.formatCost(habit, now);
+    return text;
+  }
+
+  function costSummaryText(habits, now) {
+    var breakdown = L.costBreakdown(habits, now);
+    var parts = [];
+    if (breakdown.money > 0) parts.push("省下 " + L.formatMoney(breakdown.money));
+    if (breakdown.hours > 0) parts.push("省回 " + L.formatCostValue(breakdown.hours, "time", "小时"));
+    Object.keys(breakdown.custom).forEach(function (unit) {
+      parts.push("少用 " + L.formatCostValue(breakdown.custom[unit], "custom", unit));
+    });
+    return parts.join(" · ");
+  }
+
+  function emptyHTML() {
+    var presets = L.PRESETS.map(function (p) {
+      return presetButtonHTML(p, 'data-act="new-habit" data-key="' + p.key + '"');
+    }).join("");
+    return (
+      '<section class="card intro">' +
+      "<h2>从一个坏习惯开始</h2>" +
+      '<p class="muted">选一个你现在最想摆脱的。应用会帮你计时、记录冲动、算你省回了多少钱或多少时间。</p>' +
+      '<div class="list">' + presets + "</div>" +
+      '<p class="muted small">所有数据只保存在这台设备的浏览器里，不会上传到任何服务器。</p>' +
+      "</section>"
+    );
+  }
+
+  function sumTileHTML(label, value, sub) {
+    return (
+      '<div class="sum"><span class="k">' +
+      esc(label) +
+      '</span><span class="v">' +
+      esc(value) +
+      "</span>" +
+      (sub ? '<span class="sub">' + esc(sub) + "</span>" : "") +
+      "</div>"
+    );
+  }
+
+  function homeHTML() {
+    var now = Date.now();
+    if (!state.habits.length) return sloganHTML() + emptyHTML();
+    var t = L.totals(state.habits, now);
+    var line = ["正在戒断 " + t.count + " 项"];
+    var cost = costSummaryText(state.habits, now);
+    if (cost) line.push(cost);
+    if (t.resisted > 0) line.push("扛住冲动 " + t.resisted + " 次");
+    return (
+      sloganHTML() +
+      '<p class="muted small summary-line">' + esc(line.join(" · ")) + "</p>" +
+      '<div class="rows">' +
+      state.habits
+        .map(function (habit) {
+          return habitRowHTML(habit, now);
+        })
+        .join("") +
+      "</div>" +
+      '<button class="btn ghost wide" data-act="new-habit">+ 添加一个戒断目标</button>'
+    );
+  }
+
+  var WEEKDAY_ROW = L.WEEKDAY_LABELS.map(function (w) {
+    return "<span>" + w + "</span>";
+  }).join("");
+
+  var CAL_LEGEND =
+    '<div class="legend">' +
+    '<span><i class="sw sw-done"></i>打卡</span>' +
+    '<span><i class="sw sw-urge"></i>有冲动</span>' +
+    '<span><i class="sw sw-relapse"></i>破戒</span>' +
+    '<span><i class="sw sw-none"></i>没记录</span>' +
+    "</div>";
+
+  var MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+
+  /* 月历：大号月份标题 + 周行 + 每天"数字 + 状态标记"。
+     打卡的样式是"数字后面一个实心圆、日期反色"，所以日期永远不会被盖住。 */
+  function monthCalendarHTML(habit, year, month, now) {
+    var cells = L.monthGrid(habit, year, month, now);
+    var todayKey = L.dayKey(now);
+    /* 注意：这里保持成"每格一个字符串"的数组，
+       按周切行时切数组，别切拼好的字符串（切字符串会把标签截断） */
+    var dayCells = cells
+      .map(function (cell) {
+        if (cell.blank) return '<span class="day blank"></span>';
+
+        var classes = ["day", cell.level];
+        if (cell.key === todayKey) classes.push("today");
+        if (ui.pulse && ui.pulse.id === habit.id && ui.pulse.key === cell.key) classes.push("pulse");
+
+        var tip =
+          cell.key +
+          (cell.checkin ? " · 已打卡" : cell.future ? "" : " · 点一下打卡") +
+          (cell.urges ? " · 冲动 " + cell.urges + " 次" : "") +
+          (cell.relapses ? " · 破戒" : "");
+        var attrs = cell.future
+          ? ' disabled aria-label="' + esc(cell.key + "（还没到）") + '"'
+          : ' data-act="toggle-day" data-id="' +
+            habit.id +
+            '" data-key="' +
+            cell.key +
+            '" aria-label="' +
+            esc(cell.key + (cell.checkin ? " 已打卡，不能取消" : " 没打卡，点一下打卡")) +
+            '"';
+
+        return (
+          '<button type="button" class="' +
+          classes.join(" ") +
+          '" title="' +
+          esc(tip) +
+          '"' +
+          attrs +
+          '><span class="day-num">' +
+          cell.day +
+          '</span><span class="day-mark"></span></button>'
+        );
+      });
+
+    // 按周切行，方便画每周之间的细分隔线
+    var weeks = "";
+    for (var i = 0; i < dayCells.length; i += 7) {
+      weeks += '<div class="cal-week">' + dayCells.slice(i, i + 7).join("") + "</div>";
+    }
+
+    return (
+      '<div class="cal-head">' +
+      '<button class="icon-btn" data-act="month-prev" aria-label="上个月">‹</button>' +
+      '<span class="cal-year">' +
+      year +
+      " 年</span>" +
+      '<button class="icon-btn" data-act="month-next" aria-label="下个月">›</button>' +
+      '<button class="link-btn" data-act="month-now">回到本月</button>' +
+      "</div>" +
+      '<h2 class="cal-title">' +
+      MONTH_NAMES[month] +
+      "</h2>" +
+      '<div class="cal-weekdays">' +
+      WEEKDAY_ROW +
+      "</div>" +
+      '<div class="cal-weeks">' +
+      weeks +
+      "</div>"
+    );
+  }
+
+  /* 兼容旧调用：详情页里也用它 */
+  function monthGridHTML(habit, year, month, now) {
+    return monthCalendarHTML(habit, year, month, now);
+  }
+
+  /* 年历里的迷你月（只看不点，整块点进去看那个月） */
+  function miniMonthHTML(item) {
+    var cells = item.cells
+      .map(function (cell) {
+        if (cell.blank) return '<span class="mini-day blank"></span>';
+        var classes = ["mini-day"];
+        if (cell.future) classes.push("future");
+        if (cell.checkin) classes.push("done");
+        if (cell.relapses) classes.push("relapse");
+        else if (cell.urges) classes.push("urge");
+        /* 一天一个元素（原来还套了一层 <i>，年视图会有 700 多个节点拖慢渲染） */
+        return '<span class="' + classes.join(" ") + '">' + cell.day + "</span>";
+      })
+      .join("");
+    return (
+      '<button class="mini" data-act="goto-month" data-month="' +
+      item.month +
+      '"><span class="mini-label">' +
+      item.label +
+      '</span><span class="mini-cal">' +
+      cells +
+      "</span></button>"
+    );
+  }
+
+  function habitSwitcherHTML() {
+    if (state.habits.length < 2) return "";
+    var current = currentHabit();
+    return (
+      '<div class="chips switcher">' +
+      state.habits
+        .map(function (habit) {
+          return (
+            '<button class="chip' +
+            (current && habit.id === current.id ? " selected" : "") +
+            '" data-act="pick-habit" data-id="' +
+            habit.id +
+            '">' +
+            esc(habit.emoji + " " + habit.name) +
+            "</button>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  function monthHTML() {
+    var habit = currentHabit();
+    if (!habit) return noHabitHTML();
+    var now = Date.now();
+    var cursor = cursorMonth();
+    var stat = L.monthStats(habit, cursor.year, cursor.month, now);
+    var ck = L.checkinStats(habit, now);
+    var cost = L.costAccum(habit, now);
+    var costText = cost > 0 ? L.costLabels(habit).short + " " + L.formatCost(habit, now) : "";
+    var lines = ["打卡 " + stat.checkins + " 天"];
+    if (cursor.year === L.currentMonth(now).year && cursor.month === L.currentMonth(now).month) lines.push("连续 " + ck.run + " 天");
+    if (stat.relapses > 0) lines.push("破戒 " + stat.relapses + " 次");
+    if (costText) lines.push(costText);
+    var stamp = new Date(now);
+    var quota = L.backfillQuota(habit, stamp.getFullYear(), stamp.getMonth());
+    return (
+      habitSwitcherHTML() +
+      '<section class="card">' +
+      monthCalendarHTML(habit, cursor.year, cursor.month, now) +
+      CAL_LEGEND +
+      '<p class="muted small">本月：' + esc(lines.join(" · ")) + "</p>" +
+      '<p class="muted small">点没打卡的日子可以补上，<b>每月 ' +
+      quota.limit +
+      " 次</b>，本月还剩 <b>" +
+      quota.left +
+      "</b> 次；已打卡的日子不能取消，今天之后的日期点不了。</p>" +
+      "</section>"
+    );
+  }
+
+  function yearHTML() {
+    var habit = currentHabit();
+    if (!habit) return noHabitHTML();
+    var now = Date.now();
+    var year = cursorYear();
+    var overview = L.yearOverview(habit, year, now);
+    var ck = L.checkinStats(habit, now);
+    var cost = L.costAccum(habit, now);
+    /* 简洁版：没有卡片框，就是"年份 + 12 个迷你月 + 一行汇总" */
+    var summary = ["全年打卡 " + overview.checkins + " 天", "最长连续 " + overview.longestRun + " 天"];
+    if (overview.relapses > 0) summary.push("破戒 " + overview.relapses + " 次");
+    if (cost > 0) summary.push(L.costLabels(habit).short + " " + L.formatCost(habit, now));
+    return (
+      habitSwitcherHTML() +
+      '<section class="year-view">' +
+      '<div class="year-head">' +
+      '<button class="icon-btn" data-act="year-prev" aria-label="上一年">‹</button>' +
+      '<h2 class="year-title">' +
+      year +
+      " 年</h2>" +
+      '<button class="icon-btn" data-act="year-next" aria-label="下一年">›</button>' +
+      "</div>" +
+      '<div class="mini-grid">' +
+      overview.months
+        .map(function (item) {
+          return miniMonthHTML(item);
+        })
+        .join("") +
+      "</div>" +
+      '<p class="muted small year-sum">' +
+      esc(summary.join(" · ")) +
+      " · 连续打卡 " +
+      ck.run +
+      " 天</p>" +
+      '<div class="actions"><button class="link-btn" data-act="year-now">回到今年</button>' +
+      '<span class="muted small">点某个月跳到那个月</span></div>' +
+      "</section>"
+    );
+  }
+
+  function noHabitHTML() {
+    return (
+      '<section class="card intro"><h2>还没有戒断目标</h2>' +
+      '<p class="muted">先去「打卡」页添加一个，这里就会有它的记录。</p>' +
+      '<div class="actions"><button class="btn primary" data-act="new-habit">添加戒断目标</button></div></section>'
+    );
+  }
+
+  function milestonesCompactHTML(habit, now) {
+    var p = L.milestoneProgress(habit, now);
+    var head =
+      '<div class="progress-wrap">' +
+      '<div class="progress"><div class="progress-bar" style="width:' + Math.round(p.progress * 100) + '%"></div></div>' +
+      (p.next
+        ? '<p class="muted small">下一个：<b>' + esc(p.next.title) + "</b> · " + esc(p.next.desc) + "<br>还有 " + L.formatDuration(p.remainingMs) + "</p>"
+        : '<p class="muted small">所有里程碑都已达成。</p>') +
+      "</div>";
+    if (!ui.milestonesOpen) {
+      return (
+        '<section class="card"><h3>身体在发生什么</h3><p class="muted small">已达成 ' +
+        p.reached.length +
+        " / " +
+        p.list.length +
+        ' 个里程碑</p>' +
+        head +
+        '<div class="actions"><button class="btn ghost small-btn" data-act="toggle-milestones">查看全部</button></div></section>'
+      );
+    }
+    var items = p.list
+      .map(function (m) {
+        var done = p.elapsed >= m.ms;
+        var isNext = p.next && p.next.ms === m.ms;
+        return (
+          '<li class="' +
+          (done ? "done" : isNext ? "next" : "todo") +
+          '"><span class="dot">' +
+          (done ? "✓" : "") +
+          '</span><div class="ms-body"><b>' +
+          esc(m.title) +
+          "</b><span>" +
+          esc(m.desc) +
+          "</span></div></li>"
+        );
+      })
+      .join("");
+    return (
+      '<section class="card"><h3>身体在发生什么</h3><p class="muted small">已达成 ' +
+      p.reached.length +
+      " / " +
+      p.list.length +
+      " 个里程碑</p>" +
+      head +
+      '<ul class="timeline">' +
+      items +
+      "</ul>" +
+      '<div class="actions"><button class="btn ghost small-btn" data-act="toggle-milestones">收起</button></div></section>'
+    );
+  }
+
+  function detailHTML(habit) {
+    var now = Date.now();
+    var stats = L.urgeStats(habit);
+    var checked = L.isCheckedIn(habit, now);
+    var ck = L.checkinStats(habit, now);
+    var labels = L.costLabels(habit);
+    var costType = L.costTypeOf(habit);
+    var cost = L.costAccum(habit, now);
+    var equivalent = L.timeEquivalent(cost, costType);
+    var cursor = L.currentMonth(now);
+    var monthStat = L.monthStats(habit, cursor.year, cursor.month, now);
+    var stamp = new Date(now);
+    var ckQuota = L.backfillQuota(habit, stamp.getFullYear(), stamp.getMonth());
+
+    var costLine =
+      '<section class="card cost-card">' +
+      "<h3>" +
+      esc(labels.long) +
+      "</h3>" +
+      (cost > 0
+        ? '<p class="cost-value">' +
+          esc(L.formatCost(habit, now)) +
+          "</p>" +
+          '<p class="muted small">按每天 ' +
+          esc(L.formatCostValue(L.costPerDay(habit), costType, L.costUnit(habit))) +
+          " 折算" +
+          (equivalent ? "，" + esc(equivalent) : "") +
+          "</p>"
+        : '<p class="muted small">还没有设置每天的代价。</p>') +
+      '<div class="actions"><button class="btn ghost small-btn" data-act="edit-habit" data-id="' +
+      habit.id +
+      '">改设置</button></div>' +
+      "</section>";
+
+    var facts = ["累计打卡 " + ck.total + " 天", "连续打卡 " + ck.run + " 天", "最长坚持 " + L.formatDuration(L.bestStreakMs(habit, now))];
+    if (stats.resisted > 0) facts.push("扛住冲动 " + stats.resisted + " 次");
+    if (habit.relapses.length) facts.push("破戒 " + habit.relapses.length + " 次");
+
+    return (
+      '<button class="back" data-act="nav" data-view="home">‹ 返回</button>' +
+      '<section class="card hero">' +
+      '<div class="hero-head"><span class="habit-emoji big">' + esc(habit.emoji) + "</span><div><h2>" + esc(habit.name) + "</h2>" +
+      '<p class="muted small">' +
+      (habit.reason ? esc(habit.reason) + " · " : "") +
+      "从 " + dateTimeText(habit.cleanSince) + " 开始</p></div></div>" +
+      '<div class="timer big" data-live="streak" data-id="' + habit.id + '">' + timerInner(habit, now) + "</div>" +
+      '<div class="actions">' +
+      '<button class="btn big-check ' + (checked ? "ok" : "primary") + '" data-act="toggle-checkin" data-id="' + habit.id + '">' +
+      (checked ? "✓ 今天已打卡" : "今天打卡") +
+      "</button>" +
+      '<button class="btn warn" data-act="sos" data-id="' + habit.id + '">我有点想…</button>' +
+      "</div>" +
+      '<p class="muted small">' + esc(facts.join(" · ")) + "</p>" +
+      "</section>" +
+      costLine +
+      '<section class="card"><h3>本月打卡</h3>' +
+      monthGridHTML(habit, cursor.year, cursor.month, now) +
+      CAL_LEGEND +
+      '<p class="muted small">本月打卡 ' +
+      monthStat.checkins +
+      " 天" +
+      (monthStat.relapses ? " · 破戒 " + monthStat.relapses + " 次" : "") +
+      " · 补打卡本月还剩 " +
+      ckQuota.left +
+      " 次</p>" +
+      '<div class="actions"><button class="btn ghost small-btn" data-act="nav" data-view="month" data-id="' + habit.id + '">看整月</button>' +
+      '<button class="btn ghost small-btn" data-act="nav" data-view="year" data-id="' + habit.id + '">看全年</button></div>' +
+      "</section>" +
+      milestonesCompactHTML(habit, now) +
+      '<section class="card danger-zone">' +
+      "<h3>管理</h3>" +
+      '<div class="actions">' +
+      '<button class="btn ghost" data-act="edit-habit" data-id="' + habit.id + '">编辑</button>' +
+      '<button class="btn ghost" data-act="open-relapse" data-id="' + habit.id + '">今天没守住</button>' +
+      '<button class="btn danger" data-act="delete-habit" data-id="' + habit.id + '">删除</button>' +
+      "</div></section>"
+    );
+  }
+
+  function settingsHTML() {
+    var raw = "";
+    try {
+      raw = window.localStorage.getItem(STORAGE_KEY) || "";
+    } catch (err) {
+      raw = "";
+    }
+    var urgeCount = state.habits.reduce(function (a, h) {
+      return a + h.urges.length;
+    }, 0);
+    var themeNames = { dark: "黑色", light: "白色", system: "跟随系统" };
+    var themeSeg = ["dark", "light", "system"]
+      .map(function (key) {
+        return (
+          '<button class="seg-btn' +
+          (state.theme === key ? " active" : "") +
+          '" data-act="theme" data-value="' +
+          key +
+          '" data-theme-value="' +
+          key +
+          '">' +
+          themeNames[key] +
+          "</button>"
+        );
+      })
+      .join("");
+    return (
+      '<section class="card"><h3>外观</h3>' +
+      '<div class="seg" data-theme-pick>' +
+      themeSeg +
+      "</div>" +
+      '<p class="muted small">现在是' +
+      esc(themeNames[state.theme] || "跟随系统") +
+      (state.theme === "system" ? "（当前系统是" + (resolvedTheme() === "dark" ? "深色" : "浅色") + "）" : "") +
+      "。</p></section>" +
+      '<section class="card"><h3>我的自律标语</h3>' +
+      '<p class="muted small">首页每天轮换一句标语。你可以写自己的，它们会和内置标语一起出现，也会出现在冲动急救的呼吸引导里。</p>' +
+      '<div class="actions"><button class="btn ghost" data-act="manage-slogans">管理我的标语' +
+      (state.slogans.length ? "（" + state.slogans.length + " 句）" : "") +
+      "</button></div></section>" +
+      '<section class="card"><h3>数据</h3>' +
+      '<p class="muted small">' + state.habits.length + " 个目标 · " + urgeCount + " 条冲动记录 · 本地占用约 " + Math.max(1, Math.round(raw.length / 1024)) + " KB</p>" +
+      '<div class="actions">' +
+      '<button class="btn ghost" data-act="export">导出备份（JSON）</button>' +
+      '<button class="btn ghost" data-act="import">从备份恢复</button>' +
+      '<button class="btn danger" data-act="clear">清空所有数据</button>' +
+      "</div></section>" +
+      '<section class="card"><h3>关于</h3>' +
+      '<p class="muted small">数据只保存在这台设备的浏览器里，不上传、不联网。清空浏览器数据会一并删掉记录，建议定期导出备份。</p>' +
+      '<p class="muted small">提醒：这里的时间线来自公开的健康科普资料，仅供参考，不能替代医生的诊断和治疗建议。如果戒断时出现明显不适（比如严重心慌、手抖、出汗、幻觉），请及时就医。</p>' +
+      "</section>"
+    );
+  }
+
+  function viewHTML() {
+    if (state.view === "detail") {
+      var habit = getHabit(state.activeId);
+      if (habit) return detailHTML(habit);
+    }
+    if (state.view === "month") return monthHTML();
+    if (state.view === "year") return yearHTML();
+    if (state.view === "settings") return settingsHTML();
+    return homeHTML();
+  }
+
+  function render(resetScroll) {
+    var theme = resolvedTheme();
+    document.documentElement.setAttribute("data-theme", theme);
+    // 让手机状态栏的颜色跟着主题走，避免顶部出现一条对不上的色块
+    var themeColor = document.getElementById("themeColor");
+    if (themeColor) themeColor.setAttribute("content", theme === "light" ? "#f4f6fa" : "#0e1116");
+    var statusBar = document.getElementById("statusBarStyle");
+    if (statusBar) statusBar.setAttribute("content", theme === "light" ? "default" : "black-translucent");
+    var y = window.scrollY;
+    $("#app").innerHTML = topbarHTML() + '<main class="main">' + viewHTML() + "</main>" + tabbarHTML();
+    setupTabbar();
+
+    // 换页时内容错落着进场，方向跟着底部导航走
+    var viewKey = state.view + ":" + (state.view === "detail" ? state.activeId || "" : "");
+    var changed = viewKey !== ui.lastViewKey;
+    ui.lastViewKey = viewKey;
+    if ((changed || ui.forceAnim) && !reduceMotion()) {
+      var main = $(".main");
+      if (main) main.classList.add("anim-in");
+    }
+    ui.forceAnim = false;
+    ui.pulse = null;
+    ui.sloganAnim = false;
+
+    // 底栏是刚重建的，让液态玻璃重新贴一次（没装 glass.js 也不会报错）
+    if (window.LiquidGlass && window.LiquidGlass.refresh) window.LiquidGlass.refresh();
+
+    window.scrollTo(0, resetScroll ? 0 : y);
+  }
+
+  /* ==================== 数据导入导出 ==================== */
+
+  function exportData() {
+    var payload = {
+      app: "jieyin",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      theme: state.theme,
+      habits: state.habits
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "jieyin-backup-" + L.dayKey(Date.now()) + ".json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
+    toast("备份已导出");
+  }
+
+  function importData() {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.addEventListener("change", function () {
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var data;
+        try {
+          data = JSON.parse(String(reader.result));
+        } catch (err) {
+          toast("这个文件不是有效的备份");
+          return;
+        }
+        if (!data || !Array.isArray(data.habits)) {
+          toast("备份格式不对，缺少 habits 字段");
+          return;
+        }
+        if (!window.confirm("导入会覆盖当前所有记录，确定继续吗？")) return;
+        state.habits = data.habits.map(normalizeHabit);
+        state.activeId = state.habits.length ? state.habits[0].id : null;
+        state.view = "home";
+        save();
+        render(true);
+        toast("已恢复 " + state.habits.length + " 个目标");
+      };
+      reader.readAsText(file);
+    });
+    input.click();
+  }
+
+  function clearAll() {
+    if (!window.confirm("确定要清空所有记录吗？这个操作无法撤销，建议先导出备份。")) return;
+    if (!window.confirm("再确认一次：所有戒断计时、冲动与复吸记录都会被删除。")) return;
+    state = emptyState();
+    save();
+    render(true);
+    toast("已清空");
+  }
+
+  /* ==================== 事件 ==================== */
+
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]");
+    if (!el) return;
+    var act = el.getAttribute("data-act");
+    var id = el.getAttribute("data-id");
+
+    if (act === "nav") {
+      // 刚刚是用拖的，别让抬手时那次点击又跳一次
+      if (ui.suppressTabClick && Date.now() < ui.suppressTabClick && el.classList.contains("tab-btn")) return;
+      if (el.classList.contains("tab-btn")) tapFeedback();
+      goTo(el.getAttribute("data-view"), el.getAttribute("data-view") === "detail" ? id : undefined);
+      return;
+    }
+    if (act === "theme") {
+      state.theme = el.getAttribute("data-value") || "system";
+      save();
+      render();
+      return;
+    }
+    if (act === "new-habit") {
+      if ($(".overlay")) return; // 已经有弹窗开着，别叠第二层
+      var presetKey = el.getAttribute("data-key");
+      if (presetKey) openHabitForm(null, presetKey);
+      else openPresetPicker();
+      return;
+    }
+    if (act === "edit-habit") {
+      openHabitForm(id);
+      return;
+    }
+    if (act === "open-habit") {
+      goTo("detail", id);
+      return;
+    }
+    if (act === "toggle-checkin") {
+      toggleCheckin(id);
+      return;
+    }
+    if (act === "toggle-day") {
+      toggleDay(id, el.getAttribute("data-key"));
+      return;
+    }
+    if (act === "next-slogan") {
+      ui.sloganOffset += 1;
+      ui.sloganAnim = true;
+      render();
+      return;
+    }
+    if (act === "pick-habit") {
+      state.activeId = id;
+      save();
+      render();
+      return;
+    }
+    if (act === "month-prev" || act === "month-next") {
+      var step = act === "month-prev" ? -1 : 1;
+      ui.monthCursor = L.shiftMonth(cursorMonth().year, cursorMonth().month, step);
+      render(true);
+      return;
+    }
+    if (act === "month-now") {
+      ui.monthCursor = null;
+      render(true);
+      return;
+    }
+    if (act === "year-prev" || act === "year-next") {
+      ui.yearCursor = cursorYear() + (act === "year-prev" ? -1 : 1);
+      render(true);
+      return;
+    }
+    if (act === "year-now") {
+      ui.yearCursor = null;
+      render(true);
+      return;
+    }
+    if (act === "goto-month") {
+      ui.monthCursor = { year: cursorYear(), month: Number(el.getAttribute("data-month")) };
+      goTo("month");
+      return;
+    }
+    if (act === "toggle-milestones") {
+      ui.milestonesOpen = !ui.milestonesOpen;
+      render();
+      return;
+    }
+    if (act === "manage-slogans") {
+      openSloganManager();
+      return;
+    }
+    if (act === "sos") {
+      openSOS(id);
+      return;
+    }
+    if (act === "open-relapse") {
+      openRelapse(id);
+      return;
+    }
+    if (act === "delete-habit") {
+      var habit = getHabit(id);
+      if (habit && window.confirm("删除「" + habit.name + "」？所有计时与记录都会一起消失。")) deleteHabit(id);
+      return;
+    }
+    if (act === "export") {
+      exportData();
+      return;
+    }
+    if (act === "import") {
+      importData();
+      return;
+    }
+    if (act === "clear") {
+      clearAll();
+      return;
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeTopModal();
+  });
+
+  var lastDayKey = L.dayKey(Date.now());
+  if (systemTheme) {
+    var onSystemThemeChange = function () {
+      if (state.theme === "system") render();
+    };
+    if (systemTheme.addEventListener) systemTheme.addEventListener("change", onSystemThemeChange);
+    else if (systemTheme.addListener) systemTheme.addListener(onSystemThemeChange);
+  }
+
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      var bar = $(".tabbar");
+      if (bar && bar.__sync) bar.__sync();
+    }, 150);
+  });
+
+  /* 每秒只更新两个文本节点，成本很低；但页面不可见时没必要跑，
+     所以切到后台就停掉计时器，回到前台立刻补一次再继续。 */
+  function tick() {
+    var now = Date.now();
+    if (L.dayKey(now) !== lastDayKey) {
+      lastDayKey = L.dayKey(now);
+      render();
+      return;
+    }
+    $$('[data-live="streak"]').forEach(function (el) {
+      var habit = getHabit(el.getAttribute("data-id"));
+      if (habit) el.innerHTML = timerInner(habit, now);
+    });
+    $$('[data-live="streak-text"]').forEach(function (el) {
+      var habit = getHabit(el.getAttribute("data-id"));
+      if (habit) el.textContent = habitSubText(habit, now);
+    });
+  }
+
+  var tickTimer = null;
+  function startTick() {
+    if (tickTimer === null) tickTimer = setInterval(tick, 1000);
+  }
+  function stopTick() {
+    if (tickTimer !== null) {
+      clearInterval(tickTimer);
+      tickTimer = null;
+    }
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      stopTick();
+    } else {
+      tick();
+      startTick();
+    }
+  });
+  startTick();
+
+  render(true);
+})();
+
+</script>
+  </body>
+</html>
