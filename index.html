@@ -121,7 +121,7 @@ html,
 body {
   /* pan-x pan-y 里不含 pinch-zoom：双指缩放和双击缩放都交给页面自己处理，
      滚动仍然正常。这是 iOS 上唯一真正生效的禁止缩放方式。 */
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   /* 去掉下拉刷新和滚动到头的橡皮筋回弹 */
   overscroll-behavior: none;
   /* 横屏时不要自动放大字号 */
@@ -157,6 +157,7 @@ body {
 
 body.modal-open {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* ---------- 液态玻璃：一块玻璃需要的全部东西 ---------- */
@@ -1732,6 +1733,108 @@ body.modal-open .main {
   margin: 12px 0;
 }
 
+.time-field {
+  display: grid;
+  gap: 5px;
+  min-width: 112px;
+}
+
+.time-field > span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.time-value {
+  min-height: 42px;
+  padding: 8px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-picker {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  margin: 18px 0 10px;
+}
+
+.time-picker::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 40px;
+  transform: translateY(-50%);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  pointer-events: none;
+}
+
+.time-wheel {
+  position: relative;
+  z-index: 1;
+  height: 200px;
+  padding-block: 80px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
+}
+
+.time-wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.time-option {
+  display: grid;
+  width: 100%;
+  height: 40px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  scroll-snap-align: center;
+  transition: color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.time-option.selected {
+  color: var(--text);
+  transform: scale(1.04);
+}
+
+.time-picker-colon {
+  position: relative;
+  z-index: 1;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.time-picker-preview {
+  margin: 0 0 14px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.time-picker-preview b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
 .reminder-banner {
   display: grid;
   gap: 6px;
@@ -1890,6 +1993,8 @@ body.modal-open .main {
 .overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: 100vw;
   background: rgba(6, 10, 16, 0.46);
   backdrop-filter: blur(5px);
   display: flex;
@@ -1897,12 +2002,16 @@ body.modal-open .main {
   justify-content: center;
   padding: 20px 12px max(12px, env(safe-area-inset-bottom, 0px));
   z-index: 50;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   animation: sheetBackdropIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal {
   width: min(560px, 100%);
+  max-width: 100%;
   max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
   background: var(--card);
   border: 1px solid transparent;
@@ -1910,8 +2019,10 @@ body.modal-open .main {
   padding: 22px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   margin: 0 auto;
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   transform-origin: 50% 100%;
   animation: sheetIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1970,10 +2081,14 @@ body.modal-open .main {
 
 .modal-body {
   width: min(560px, 100%);
+  max-width: 100%;
   max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
   margin: 0 auto;
   padding: 22px;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   border-radius: 28px;
   background: var(--card);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
@@ -4597,6 +4712,111 @@ button.chip.selected {
     };
   }
 
+  function timePickerHTML() {
+    var parts = reminderTimeParts();
+    var hours = "";
+    var minutes = "";
+    var i;
+    for (i = 0; i < 24; i++) {
+      hours +=
+        '<button type="button" class="time-option' + (i === parts.hour ? " selected" : "") +
+        '" data-time-hour="' + i + '" aria-label="' + i + ' 点">' + L.pad2(i) + "</button>";
+    }
+    for (i = 0; i < 60; i++) {
+      minutes +=
+        '<button type="button" class="time-option' + (i === parts.minute ? " selected" : "") +
+        '" data-time-minute="' + i + '" aria-label="' + i + ' 分">' + L.pad2(i) + "</button>";
+    }
+    return (
+      "<h2>设置提醒时间</h2>" +
+      '<p class="muted small">上下滑动选择时间。只有点「✓ 确认」后才会保存，滑到一半或直接关闭都不会修改。</p>' +
+      '<div class="time-picker">' +
+      '<div class="time-wheel" data-hour-wheel>' + hours + "</div>" +
+      '<span class="time-picker-colon">:</span>' +
+      '<div class="time-wheel" data-minute-wheel>' + minutes + "</div>" +
+      "</div>" +
+      '<p class="time-picker-preview">每天 <b data-time-preview>' +
+      L.pad2(parts.hour) + ":" + L.pad2(parts.minute) +
+      "</b> 提醒</p>" +
+      '<div class="modal-foot">' +
+      '<button class="btn ghost" data-time-action="cancel">取消</button>' +
+      '<button class="btn primary" data-time-action="confirm">✓ 确认</button>' +
+      "</div>"
+    );
+  }
+
+  function openReminderTimePicker() {
+    var parts = reminderTimeParts();
+    var overlay = openModal(timePickerHTML(), {});
+    var hourWheel = $("[data-hour-wheel]", overlay);
+    var minuteWheel = $("[data-minute-wheel]", overlay);
+    var preview = $("[data-time-preview]", overlay);
+    var hour = parts.hour;
+    var minute = parts.minute;
+
+    function selectedIndex(wheel) {
+      return Math.max(0, Math.min(wheel.children.length - 1, Math.round(wheel.scrollTop / 40)));
+    }
+
+    function syncPreview() {
+      preview.textContent = L.pad2(hour) + ":" + L.pad2(minute);
+    }
+
+    function bindWheel(wheel, type, initial) {
+      var frame = null;
+      function updateSelection() {
+        frame = null;
+        var index = selectedIndex(wheel);
+        Array.prototype.forEach.call(wheel.children, function (option, optionIndex) {
+          option.classList.toggle("selected", optionIndex === index);
+        });
+        if (type === "hour") hour = index;
+        else minute = index;
+        syncPreview();
+      }
+      wheel.addEventListener(
+        "scroll",
+        function () {
+          if (frame !== null) return;
+          frame = window.requestAnimationFrame(updateSelection);
+        },
+        { passive: true }
+      );
+      wheel.addEventListener("click", function (event) {
+        var option = event.target.closest(".time-option");
+        if (!option) return;
+        var index = Number(type === "hour" ? option.getAttribute("data-time-hour") : option.getAttribute("data-time-minute"));
+        wheel.scrollTo({ top: index * 40, behavior: reduceMotion() ? "auto" : "smooth" });
+      });
+      window.requestAnimationFrame(function () {
+        wheel.scrollTop = initial * 40;
+        updateSelection();
+      });
+    }
+
+    bindWheel(hourWheel, "hour", parts.hour);
+    bindWheel(minuteWheel, "minute", parts.minute);
+
+    overlay.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-time-action]");
+      if (!btn) return;
+      var action = btn.getAttribute("data-time-action");
+      if (action === "cancel") {
+        closeModal(overlay);
+        return;
+      }
+      hour = selectedIndex(hourWheel);
+      minute = selectedIndex(minuteWheel);
+      var time = L.pad2(hour) + ":" + L.pad2(minute);
+      state.reminder.time = time;
+      state.reminder.lastNotified = null;
+      save();
+      closeModal(overlay);
+      render();
+      toast("提醒时间已保存为 " + time);
+    });
+  }
+
   function pendingHabits(now) {
     return state.habits.filter(function (habit) {
       return !L.isCheckedIn(habit, now);
@@ -4645,8 +4865,28 @@ button.chip.selected {
     );
   }
 
-  function showSystemNotification(title, body) {
-    if (reminderPermission() !== "granted") return false;
+  var reminderWorkerPromise = null;
+  var reminderTimer = null;
+
+  function registerReminderWorker() {
+    if (reminderWorkerPromise) return reminderWorkerPromise;
+    if (!("serviceWorker" in navigator) || !/^https?:$/.test(window.location.protocol)) {
+      reminderWorkerPromise = Promise.resolve(null);
+      return reminderWorkerPromise;
+    }
+    reminderWorkerPromise = navigator.serviceWorker
+      .register("./sw.js", { scope: "./" })
+      .then(function () {
+        return navigator.serviceWorker.ready;
+      })
+      .catch(function () {
+        return null;
+      });
+    return reminderWorkerPromise;
+  }
+
+  function showBrowserNotification(title, body) {
+    if (!window.Notification) return false;
     try {
       var note = new window.Notification(title, {
         body: body,
@@ -4663,6 +4903,51 @@ button.chip.selected {
     }
   }
 
+  function showSystemNotification(title, body) {
+    if (reminderPermission() !== "granted") return Promise.resolve(false);
+    var options = {
+      body: body,
+      tag: "jieyin-daily-reminder",
+      renotify: false,
+      icon: new URL("icon-192.png", window.location.href).href,
+      badge: new URL("icon-monochrome-192.png", window.location.href).href,
+      data: { url: window.location.href.split("#")[0] }
+    };
+    return registerReminderWorker().then(function (registration) {
+      if (registration && typeof registration.showNotification === "function") {
+        return registration.showNotification(title, options).then(
+          function () {
+            return true;
+          },
+          function () {
+            return showBrowserNotification(title, body);
+          }
+        );
+      }
+      return showBrowserNotification(title, body);
+    });
+  }
+
+  function requestReminderPermission() {
+    if (reminderPermission() !== "default" || !window.Notification || !window.Notification.requestPermission) {
+      return Promise.resolve(reminderPermission());
+    }
+    return new Promise(function (resolve) {
+      var settled = false;
+      function finish(permission) {
+        if (settled) return;
+        settled = true;
+        resolve(permission || reminderPermission());
+      }
+      try {
+        var result = window.Notification.requestPermission(finish);
+        if (result && typeof result.then === "function") result.then(finish, function () { finish("denied"); });
+      } catch (err) {
+        finish("denied");
+      }
+    });
+  }
+
   function checkReminder(now) {
     if (!state.reminder.enabled || !state.habits.length) return false;
     var target = reminderTimeParts();
@@ -4672,10 +4957,15 @@ button.chip.selected {
     if (state.reminder.lastNotified === today) return false;
     var message = reminderMessage(now);
     if (!message) return false;
-    var sent = showSystemNotification("解瘾 · 今日打卡提醒", message);
     state.reminder.lastNotified = today;
     save();
-    if (!sent) toast(message);
+    if (reminderPermission() === "granted") {
+      showSystemNotification("解瘾 · 今日打卡提醒", message).then(function (sent) {
+        if (!sent) toast(message);
+      });
+    } else {
+      toast(message);
+    }
     return true;
   }
 
@@ -4684,7 +4974,7 @@ button.chip.selected {
     save();
     render();
     if (state.reminder.enabled && reminderPermission() === "default" && window.Notification && window.Notification.requestPermission) {
-      window.Notification.requestPermission().then(function (permission) {
+      requestReminderPermission().then(function (permission) {
         toast(permission === "granted" ? "浏览器提醒已开启" : "未获得通知权限，将使用应用内提醒");
         render();
       });
@@ -4696,14 +4986,42 @@ button.chip.selected {
   function testReminderNow() {
     var message = reminderMessage(Date.now()) || "每日提醒测试：到了该打卡的时间。";
     if (reminderPermission() === "default" && window.Notification && window.Notification.requestPermission) {
-      window.Notification.requestPermission().then(function (permission) {
-        if (permission === "granted") showSystemNotification("解瘾 · 每日提醒测试", message);
+      requestReminderPermission().then(function (permission) {
+        if (permission === "granted") {
+          showSystemNotification("解瘾 · 每日提醒测试", message).then(function (sent) {
+            if (!sent) toast(message);
+          });
+        }
         else toast("未获得通知权限，应用内提醒仍可正常显示");
         render();
       });
       return;
     }
-    if (!showSystemNotification("解瘾 · 每日提醒测试", message)) toast(message);
+    showSystemNotification("解瘾 · 每日提醒测试", message).then(function (sent) {
+      if (!sent) toast(message);
+    });
+  }
+
+  function clearReminderTimer() {
+    if (reminderTimer !== null) {
+      clearTimeout(reminderTimer);
+      reminderTimer = null;
+    }
+  }
+
+  function scheduleReminderTimer() {
+    clearReminderTimer();
+    if (!state.reminder.enabled) return;
+    var now = new Date();
+    var target = reminderTimeParts();
+    var due = new Date(now);
+    due.setHours(target.hour, target.minute, 0, 0);
+    if (due.getTime() <= now.getTime()) due.setDate(due.getDate() + 1);
+    var delay = Math.min(due.getTime() - now.getTime(), 2147483647);
+    reminderTimer = window.setTimeout(function () {
+      checkReminder(Date.now());
+      scheduleReminderTimer();
+    }, Math.max(250, delay));
   }
 
   function downloadCalendarReminder() {
@@ -5537,12 +5855,15 @@ button.chip.selected {
       (state.theme === "system" ? "（当前系统是" + (resolvedTheme() === "dark" ? "深色" : "浅色") + "）" : "") +
       "。</p></section>" +
       '<section class="card"><h3>每日提醒</h3>' +
-      '<p class="muted small">网页通知需要解瘾保持打开；如果希望关掉页面也能提醒，请添加到系统日历。</p>' +
+      '<p class="muted small">浏览器通知在页面打开或退到后台时提醒。完全关闭浏览器后，网页无法保证定时通知；需要关掉页面也提醒时，请使用「添加到系统日历」。iPhone 需先将网站添加到主屏幕并允许通知。</p>' +
       '<div class="reminder-row">' +
       '<button class="btn ' + (state.reminder.enabled ? "primary" : "ghost") + '" data-act="toggle-reminder">' +
       (state.reminder.enabled ? "每日提醒已开启" : "开启每日提醒") +
       "</button>" +
-      '<label class="field"><span>提醒时间</span><input type="time" data-reminder-time value="' + esc(state.reminder.time) + '"></label>' +
+      '<div class="time-field"><span>提醒时间</span>' +
+      '<button class="btn ghost time-value" data-act="pick-reminder-time" aria-haspopup="dialog">' +
+      esc(state.reminder.time) +
+      "</button></div>" +
       "</div>" +
       '<p class="muted small">通知权限：' +
       esc(
@@ -5661,6 +5982,7 @@ button.chip.selected {
     if (window.LiquidGlass && window.LiquidGlass.refresh) window.LiquidGlass.refresh();
 
     window.scrollTo(0, resetScroll ? 0 : y);
+    scheduleReminderTimer();
   }
 
   /* ==================== 连续圆角回退 ==================== */
@@ -5947,6 +6269,10 @@ button.chip.selected {
       toggleReminder();
       return;
     }
+    if (act === "pick-reminder-time") {
+      openReminderTimePicker();
+      return;
+    }
     if (act === "test-reminder") {
       testReminderNow();
       return;
@@ -5984,20 +6310,6 @@ button.chip.selected {
 
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeTopModal();
-  });
-
-  document.addEventListener("change", function (e) {
-    var input = e.target.closest("[data-reminder-time]");
-    if (!input) return;
-    if (!/^\d{2}:\d{2}$/.test(input.value)) {
-      toast("提醒时间格式不对");
-      return;
-    }
-    state.reminder.time = input.value;
-    state.reminder.lastNotified = null;
-    save();
-    render();
-    toast("提醒时间已改为 " + input.value);
   });
 
   var lastDayKey = L.dayKey(Date.now());
@@ -6060,6 +6372,7 @@ button.chip.selected {
     } else {
       tick();
       startTick();
+      scheduleReminderTimer();
     }
   });
 
@@ -6106,7 +6419,11 @@ button.chip.selected {
 
   startTick();
 
+  registerReminderWorker();
   render(true);
+  window.setTimeout(function () {
+    checkReminder(Date.now());
+  }, 250);
 })();
 
 </script>
