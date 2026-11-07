@@ -5877,8 +5877,23 @@ button.chip.selected {
       }
     });
 
-    function afterButtonSpring(action) {
-      window.setTimeout(action, reduceMotion() ? 0 : BUTTON_SPRING_MS);
+    function afterButtonSpring(button, action) {
+      if (reduceMotion()) {
+        action();
+        return;
+      }
+      var finished = false;
+      var fallback = window.setTimeout(run, BUTTON_SPRING_MS + 40);
+      function run() {
+        if (finished) return;
+        finished = true;
+        clearTimeout(fallback);
+        action();
+      }
+      if (!button || !button.finished) {
+        return;
+      }
+      button.finished.then(run, run);
     }
 
     function endDrag(event) {
@@ -5899,13 +5914,15 @@ button.chip.selected {
         if (createHit) {
           // 指针捕获之后浏览器不再把 click 交给按钮，这里自己接住「+」
           ui.suppressTabClick = Date.now() + BUTTON_SPRING_MS + 120;
-          afterButtonSpring(openPresetPicker);
+          var createAnimation = playButtonRelease(pressedButton);
+          afterButtonSpring(createAnimation, openPresetPicker);
           return;
         }
         // 在习惯详情页时，点「打卡」也要回到列表，所以不能只比“是否当前页签”
         if (tapIndex !== activeIndex || state.view === "detail") {
           ui.suppressTabClick = Date.now() + BUTTON_SPRING_MS + 120;
-          afterButtonSpring(function () {
+          var tapAnimation = playButtonRelease(pressedButton);
+          afterButtonSpring(tapAnimation, function () {
             goTo(TABS[tapIndex].key);
           });
         }
@@ -5920,7 +5937,8 @@ button.chip.selected {
       if (index === activeIndex && state.view !== "detail") {
         render(); // 弹回原位
       } else {
-        afterButtonSpring(function () {
+        var dragAnimation = playButtonRelease(pressedButton);
+        afterButtonSpring(dragAnimation, function () {
           goTo(TABS[index].key);
         });
       }
@@ -6756,7 +6774,7 @@ button.chip.selected {
     }
 
     button.addEventListener("animationend", onAnimationEnd);
-    fallback = window.setTimeout(finish, BUTTON_SPRING_MS + 260);
+    fallback = window.setTimeout(finish, BUTTON_SPRING_MS + 40);
     if (!button.classList.contains("is-spring-release")) playButtonRelease(button);
   }
 
@@ -6995,10 +7013,16 @@ button.chip.selected {
   var lastPointerRelease = { button: null, at: 0 };
 
   function playButtonRelease(button) {
-    if (!button || button.disabled) return;
+    if (!button || button.disabled) return null;
     button.classList.remove("is-spring-release");
     void button.offsetWidth;
     button.classList.add("is-spring-release");
+    if (typeof button.getAnimations !== "function") return null;
+    var animations = button.getAnimations();
+    for (var i = 0; i < animations.length; i++) {
+      if (animations[i].animationName === "button-spring-release") return animations[i];
+    }
+    return null;
   }
 
   document.addEventListener("pointerdown", function (event) {
@@ -7013,7 +7037,7 @@ button.chip.selected {
     var button = pressedButton;
     pressedButton = null;
     lastPointerRelease = { button: button, at: Date.now() };
-    playButtonRelease(button);
+    if (!button.classList.contains("is-spring-release")) playButtonRelease(button);
   }, { passive: true });
 
   document.addEventListener("pointercancel", function () {
@@ -7021,7 +7045,7 @@ button.chip.selected {
     var button = pressedButton;
     pressedButton = null;
     lastPointerRelease = { button: button, at: Date.now() };
-    playButtonRelease(button);
+    if (!button.classList.contains("is-spring-release")) playButtonRelease(button);
   }, { passive: true });
 
   document.addEventListener("click", function (event) {
