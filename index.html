@@ -520,6 +520,14 @@ p {
   padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(104px + env(safe-area-inset-bottom, 0px));
   display: grid;
   gap: 16px;
+  transform-origin: 50% 0;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.modal-open .main {
+  transform: translate3d(0, 8px, 0) scale(0.975);
+  opacity: 0.72;
 }
 
 /* ---------- 动效 ---------- */
@@ -559,6 +567,81 @@ p {
   }
 }
 
+@keyframes pageSheetForwardIn {
+  from {
+    transform: translate3d(0, 64px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes pageSheetBackIn {
+  from {
+    transform: translate3d(0, 6px, 0) scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.main.page-sheet-forward,
+.main.page-sheet-back {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+  will-change: transform, opacity;
+}
+
+.main.page-sheet-forward {
+  animation: pageSheetForwardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.main.page-sheet-back {
+  animation: pageSheetBackIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.page-transition-layer {
+  position: fixed;
+  overflow: hidden;
+  background: var(--bg);
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-transition-layer.is-under {
+  z-index: 1;
+}
+
+.page-transition-layer.is-over {
+  z-index: 20;
+}
+
+.page-transition-layer .main {
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  margin: 0;
+  opacity: 1;
+  transform: none;
+  animation: none;
+  transition: none;
+}
+
+.page-transition-layer.is-receding {
+  opacity: 0.58;
+  transform: translate3d(0, 10px, 0) scale(0.965);
+}
+
+.page-transition-layer.is-exiting-down {
+  opacity: 0.82;
+  transform: translate3d(0, 112%, 0) scale(0.985);
+}
+
 .main.anim-in {
   animation: pageIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -585,7 +668,9 @@ p {
 
 .main.anim-in .progress-bar,
 .main.page-forward .progress-bar,
-.main.page-back .progress-bar {
+.main.page-back .progress-bar,
+.main.page-sheet-forward .progress-bar,
+.main.page-sheet-back .progress-bar {
   transform-origin: left center;
   animation: barGrow 0.75s cubic-bezier(0.22, 0.9, 0.3, 1) both;
 }
@@ -1805,35 +1890,95 @@ p {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 10, 16, 0.62);
-  backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  background: rgba(6, 10, 16, 0.46);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px 12px max(12px, env(safe-area-inset-bottom, 0px));
   z-index: 50;
   overflow-y: auto;
+  animation: sheetBackdropIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal {
   width: min(560px, 100%);
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
   background: var(--card);
   border: 1px solid transparent;
-  border-radius: var(--radius);
+  border-radius: 28px;
   padding: 22px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  animation: pop 0.16s ease;
-  margin: auto;
+  margin: 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  transform-origin: 50% 100%;
+  animation: sheetIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal.wide {
   width: min(680px, 100%);
 }
 
-@keyframes pop {
+@keyframes sheetBackdropIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(100% + 28px), 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes sheetBackdropOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sheetOut {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, calc(100% + 36px), 0) scale(0.97);
+  }
+}
+
+.overlay.is-closing {
+  pointer-events: none;
+  animation: sheetBackdropOut 0.42s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.overlay.is-closing .modal,
+.overlay.is-closing .modal-body {
+  animation: sheetOut 0.42s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.modal-body {
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
+  margin: 0 auto;
+  padding: 22px;
+  overflow-y: auto;
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  transform-origin: 50% 100%;
+  animation: sheetIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal-foot {
@@ -3645,7 +3790,7 @@ button.chip.selected {
   }
 
   function goHome() {
-    ui.pageMotion = state.view === "home" ? null : "back";
+    ui.pageMotion = state.view === "home" ? null : state.view === "detail" ? "sheet-back" : "back";
     state.view = "home";
     save();
     render(true);
@@ -3654,10 +3799,10 @@ button.chip.selected {
   function pageMotionFor(nextView, nextId) {
     if (nextView === state.view) {
       if (nextView !== "detail" || nextId === undefined || nextId === state.activeId) return null;
-      return "forward";
+      return "sheet-forward";
     }
-    if (nextView === "home") return "back";
-    if (nextView === "detail") return "forward";
+    if (nextView === "home") return state.view === "detail" ? "sheet-back" : "back";
+    if (nextView === "detail") return "sheet-forward";
     if (state.view === "detail") return "forward";
     var order = { home: 0, month: 1, year: 2, settings: 3 };
     return (order[nextView] || 0) >= (order[state.view] || 0) ? "forward" : "back";
@@ -3677,6 +3822,8 @@ button.chip.selected {
     opts = opts || {};
     var overlay = document.createElement("div");
     overlay.className = "overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
     overlay.innerHTML = '<div class="modal ' + (opts.size || "") + '">' + html + "</div>";
     document.body.appendChild(overlay);
     document.body.classList.add("modal-open");
@@ -3691,9 +3838,15 @@ button.chip.selected {
 
   function closeModal(overlay) {
     if (!overlay) return;
+    if (overlay.classList.contains("is-closing")) return;
     if (typeof overlay.__cleanup === "function") overlay.__cleanup();
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    if (!$(".overlay")) document.body.classList.remove("modal-open");
+    overlay.classList.add("is-closing");
+    if (!$(".overlay:not(.is-closing)")) document.body.classList.remove("modal-open");
+    var delay = reduceMotion() ? 0 : 420;
+    window.setTimeout(function () {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      if (!$(".overlay:not(.is-closing)") && !$(".overlay")) document.body.classList.remove("modal-open");
+    }, delay);
   }
 
   function closeTopModal() {
@@ -5432,6 +5585,35 @@ button.chip.selected {
     return homeHTML();
   }
 
+  function capturePageTransitionLayer(motion) {
+    if (motion !== "sheet-forward" && motion !== "sheet-back") return null;
+    var current = $(".main");
+    if (!current) return null;
+    var rect = current.getBoundingClientRect();
+    var layer = document.createElement("div");
+    layer.className = "page-transition-layer " + (motion === "sheet-back" ? "is-over" : "is-under");
+    layer.style.left = rect.left + "px";
+    layer.style.top = rect.top + "px";
+    layer.style.width = rect.width + "px";
+    layer.style.height = rect.height + "px";
+    layer.setAttribute("aria-hidden", "true");
+    var clone = current.cloneNode(true);
+    clone.classList.remove("anim-in", "page-forward", "page-back", "page-sheet-forward", "page-sheet-back");
+    clone.style.width = "100%";
+    clone.style.minHeight = rect.height + "px";
+    layer.appendChild(clone);
+    document.body.appendChild(layer);
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        layer.classList.add(motion === "sheet-forward" ? "is-receding" : "is-exiting-down");
+      });
+    });
+    window.setTimeout(function () {
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+    }, 620);
+    return layer;
+  }
+
   function render(resetScroll) {
     var theme = resolvedTheme();
     document.documentElement.setAttribute("data-theme", theme);
@@ -5441,19 +5623,33 @@ button.chip.selected {
     var statusBar = document.getElementById("statusBarStyle");
     if (statusBar) statusBar.setAttribute("content", theme === "light" ? "default" : "black-translucent");
     var y = window.scrollY;
+    var viewKey = state.view + ":" + (state.view === "detail" ? state.activeId || "" : "");
+    var changed = viewKey !== ui.lastViewKey;
+    var motion = changed ? ui.pageMotion : null;
+    if (changed && !reduceMotion()) capturePageTransitionLayer(motion);
     $("#app").innerHTML = topbarHTML() + '<main class="main">' + viewHTML() + "</main>" + tabbarHTML();
     setupTabbar();
     scheduleContinuousCornersFallback();
 
     // 换页时内容错落着进场，方向跟着底部导航走
-    var viewKey = state.view + ":" + (state.view === "detail" ? state.activeId || "" : "");
-    var changed = viewKey !== ui.lastViewKey;
     ui.lastViewKey = viewKey;
     if ((changed || ui.forceAnim) && !reduceMotion()) {
       var main = $(".main");
       if (main) {
-        var motion = changed ? ui.pageMotion : null;
-        main.classList.add(motion === "back" ? "page-back" : motion === "forward" ? "page-forward" : "anim-in");
+        var pageClass =
+          motion === "sheet-back"
+            ? "page-sheet-back"
+            : motion === "sheet-forward"
+              ? "page-sheet-forward"
+              : motion === "back"
+                ? "page-back"
+                : motion === "forward"
+                  ? "page-forward"
+                  : "anim-in";
+        main.classList.add(pageClass);
+        window.setTimeout(function () {
+          if (main.isConnected) main.classList.remove("anim-in", "page-forward", "page-back", "page-sheet-forward", "page-sheet-back");
+        }, 520);
       }
     }
     ui.pageMotion = null;
