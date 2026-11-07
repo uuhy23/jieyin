@@ -60,7 +60,6 @@
   --nav-ink: rgba(255, 255, 255, 0.8);
   --nav-ink-active: #ffffff;
   --nav-lens: rgba(255, 255, 255, 0.1);
-  --nav-lens-border: rgba(255, 255, 255, 0.15);
   --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.28),
     0 4px 12px rgba(33, 47, 40, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
@@ -100,7 +99,6 @@
   --nav-ink: rgba(17, 19, 18, 0.68);
   --nav-ink-active: #000000;
   --nav-lens: rgba(255, 255, 255, 0.18);
-  --nav-lens-border: rgba(255, 255, 255, 0.54);
   --nav-shadow: 0 20px 52px rgba(33, 47, 40, 0.18),
     0 4px 12px rgba(33, 47, 40, 0.07),
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
@@ -345,25 +343,7 @@ p {
   }
 }
 
-/* 外侧亮边与内侧第二道高光，避免变成普通磨砂条 */
-.tabbar.glass::after {
-  position: absolute;
-  inset: 1px;
-  z-index: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: inherit;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04),
-    transparent 52%
-  );
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  opacity: 1;
-  content: "";
-  pointer-events: none;
-}
-
-/* 独立滑动透镜：尺寸与当前图标位完全一致 */
+/* 选中底色：只有一层，不再套第二层玻璃与描边 */
 .tab-indicator {
   position: absolute;
   top: 8px;
@@ -372,23 +352,14 @@ p {
   width: 112px;
   height: 58px;
   border-radius: 999px;
+  background: var(--nav-lens);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translate3d(0, 0, 0);
   transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-  will-change: transform;
-}
-
-.tab-indicator-inner {
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--nav-lens-border);
-  border-radius: inherit;
-  background: var(--nav-lens);
-  box-shadow: 0 2px 8px rgba(31, 48, 38, 0.07),
-    inset 0 1px 0 color-mix(in srgb, var(--nav-lens-border) 48%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--nav-lens-border) 18%, transparent);
   -webkit-backdrop-filter: blur(12px) saturate(155%);
   backdrop-filter: blur(12px) saturate(155%);
+  pointer-events: none;
+  will-change: transform;
 }
 
 .tabbar.dragging .tab-indicator {
@@ -3908,7 +3879,7 @@ p {
     }).join("");
     return (
       '<nav class="tabbar glass" aria-label="主导航">' +
-      '<span class="tab-indicator" aria-hidden="true"><span class="tab-indicator-inner"></span></span>' +
+      '<span class="tab-indicator" aria-hidden="true"></span>' +
       items +
       "</nav>"
     );
