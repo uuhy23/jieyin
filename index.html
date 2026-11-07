@@ -549,22 +549,18 @@ body.modal-open .main {
 @keyframes pageForwardIn {
   from {
     opacity: 0;
-    transform: translate3d(-44px, 0, 0) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 @keyframes pageBackIn {
   from {
     opacity: 0;
-    transform: translate3d(32px, 0, 0) scale(0.995);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -649,12 +645,12 @@ body.modal-open .main {
 
 .main.page-forward {
   animation: pageForwardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 .main.page-back {
   animation: pageBackIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 /* 进度条在进场时自己长出来 */
