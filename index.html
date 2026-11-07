@@ -478,7 +478,7 @@ p {
 
 @media (max-width: 620px) {
   .tabbar {
-    bottom: max(6px, env(safe-area-inset-bottom, 0px));
+    bottom: max(0px, calc(env(safe-area-inset-bottom, 0px) - 18px));
     /* 对齐手机参考图：约占屏宽 97%，左右各留约 1.5% */
     width: max(300px, 97vw);
     max-width: 448px;
