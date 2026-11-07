@@ -160,6 +160,13 @@ body.modal-open {
   overscroll-behavior: none;
 }
 
+html.home-scroll-locked,
+body.home-scroll-locked {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* ---------- 液态玻璃：一块玻璃需要的全部东西 ---------- */
 
 .glass {
@@ -1428,6 +1435,211 @@ body.modal-open .main {
   font-size: 23px;
 }
 
+/* ---------- 首次进入引导 ---------- */
+
+body.onboarding-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.onboarding.is-closing {
+  animation: onboardingOut 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.onboarding-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 24px;
+  width: min(520px, 100%);
+  min-height: min(620px, calc(100dvh - 52px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+}
+
+.onboarding-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.onboarding-step {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.onboarding-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 82px;
+}
+
+.onboarding-progress span {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 16%, transparent);
+  transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.onboarding-progress span.active {
+  background: var(--text);
+}
+
+.onboarding-content {
+  align-self: center;
+  display: grid;
+  gap: 24px;
+  animation: onboardingIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.onboarding-kicker {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.onboarding-title {
+  max-width: 12em;
+  margin: 0;
+  font-size: clamp(36px, 9vw, 48px);
+  font-weight: 400;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.onboarding-copy {
+  max-width: 34em;
+  margin: -10px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.onboarding-answers {
+  display: grid;
+  gap: 12px;
+}
+
+.onboarding-choice {
+  width: 100%;
+  min-height: 58px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card-2);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.onboarding-choice.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.onboarding-choice:active {
+  transform: scale(0.985);
+}
+
+.onboarding-choice:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--text) 30%, transparent);
+  outline-offset: 2px;
+}
+
+.onboarding-features {
+  display: grid;
+  gap: 12px;
+}
+
+.onboarding-feature {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--card-2);
+}
+
+.onboarding-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  font-size: 20px;
+}
+
+.onboarding-feature b {
+  display: block;
+  font-size: 16px;
+}
+
+.onboarding-feature small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.onboarding-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.onboarding-back {
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.onboarding-start {
+  min-width: 132px;
+}
+
+@keyframes onboardingIn {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes onboardingOut {
+  to {
+    opacity: 0;
+  }
+}
+
 /* 苹果的分组列表：一张圆角卡片里若干行，行之间一条发丝线 */
 .list {
   display: grid;
@@ -2223,11 +2435,11 @@ body.modal-open .main {
 @keyframes sheetIn {
   from {
     opacity: 0;
-    transform: translate3d(0, calc(100% + 28px), 0) scale(0.97);
+    transform: translate3d(0, calc(100% + 28px), 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -2240,11 +2452,11 @@ body.modal-open .main {
 @keyframes sheetOut {
   from {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
   to {
     opacity: 0;
-    transform: translate3d(0, calc(100% + 36px), 0) scale(0.97);
+    transform: translate3d(0, calc(100% + 36px), 0);
   }
 }
 
@@ -3711,6 +3923,7 @@ button.chip.selected {
       theme: "system",
       view: "home",
       activeId: null,
+      onboardingDone: false,
       habits: [],
       slogans: [],
       reminder: { enabled: false, time: "20:00", lastNotified: null }
@@ -3880,6 +4093,10 @@ button.chip.selected {
       s.habits = Array.isArray(data.habits) ? data.habits.map(normalizeHabit) : [];
       s.slogans = normalizeSlogans(data.slogans);
       s.reminder = normalizeReminder(data.reminder);
+      s.onboardingDone =
+        data.onboardingDone === true ||
+        (data.onboardingDone !== false &&
+          (s.habits.length > 0 || s.slogans.length > 0 || s.reminder.enabled === true));
       return s;
     } catch (err) {
       console.warn("本地数据损坏，已忽略", err);
@@ -3898,6 +4115,7 @@ button.chip.selected {
           theme: state.theme,
           view: state.view,
           activeId: state.activeId,
+          onboardingDone: state.onboardingDone,
           habits: state.habits,
           slogans: state.slogans,
           reminder: state.reminder
@@ -4159,6 +4377,111 @@ button.chip.selected {
   }
 
   /* ==================== 自律标语 ==================== */
+
+  function onboardingStepHTML(index) {
+    var total = 3;
+    var progress = [0, 1, 2]
+      .map(function (step) {
+        return "<span" + (step <= index ? ' class="active"' : "") + "></span>";
+      })
+      .join("");
+    var content;
+    if (index === 0) {
+      content =
+        '<span class="onboarding-kicker">先问自己一个问题</span>' +
+        '<h1 class="onboarding-title" id="onboardingTitle">你是否反复想戒掉一个习惯，却总是坚持不了多久？</h1>' +
+        '<div class="onboarding-answers">' +
+        '<button class="onboarding-choice primary" data-onboarding-next>是，我经常这样</button>' +
+        '<button class="onboarding-choice" data-onboarding-next>有过，但不算经常</button>' +
+        "</div>";
+    } else if (index === 1) {
+      content =
+        '<span class="onboarding-kicker">再问一个</span>' +
+        '<h1 class="onboarding-title" id="onboardingTitle">你是否发现，冲动来的时候，自己往往来不及准备？</h1>' +
+        '<div class="onboarding-answers">' +
+        '<button class="onboarding-choice primary" data-onboarding-next>是的，很难拦住</button>' +
+        '<button class="onboarding-choice" data-onboarding-next>偶尔会这样</button>' +
+        "</div>";
+    } else {
+      content =
+        '<span class="onboarding-kicker">解瘾会陪你做这些事</span>' +
+        '<h1 class="onboarding-title" id="onboardingTitle">不靠硬扛，把改变拆成看得见的一小步。</h1>' +
+        '<p class="onboarding-copy">「解瘾」不催你，也不评判你。它帮你记录每一次坚持和反复，并把这些变成能看见的反馈。</p>' +
+        '<div class="onboarding-features">' +
+        '<div class="onboarding-feature"><span class="onboarding-icon">◷</span><span><b>计时与打卡</b><small>守住一天，就留下一条清楚记录。</small></span></div>' +
+        '<div class="onboarding-feature"><span class="onboarding-icon">✎</span><span><b>记录冲动</b><small>写下触发点，下次更早发现它。</small></span></div>' +
+        '<div class="onboarding-feature"><span class="onboarding-icon">↗</span><span><b>看见回报</b><small>把省下的钱、时间和身体变化留在眼前。</small></span></div>' +
+        "</div>";
+    }
+    var actions =
+      '<div class="onboarding-actions">' +
+      (index > 0 ? '<button class="onboarding-back" data-onboarding-back>上一步</button>' : "<span></span>") +
+      (index === total - 1
+        ? '<button class="btn primary onboarding-start" data-onboarding-start>开始使用</button>'
+        : "") +
+      "</div>";
+    return (
+      '<div class="onboarding-panel">' +
+      '<div class="onboarding-head"><span class="onboarding-step">0' +
+      (index + 1) +
+      " / 0" +
+      total +
+      '</span><div class="onboarding-progress" aria-hidden="true">' +
+      progress +
+      "</div></div>" +
+      '<div class="onboarding-content" aria-live="polite">' +
+      content +
+      "</div>" +
+      actions +
+      "</div>"
+    );
+  }
+
+  function showOnboarding() {
+    if (state.onboardingDone || $(".onboarding")) return;
+    var overlay = document.createElement("div");
+    overlay.className = "onboarding";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "onboardingTitle");
+    document.body.classList.add("onboarding-open");
+    var app = $("#app");
+    if (app && "inert" in app) app.inert = true;
+    var step = 0;
+
+    function paint() {
+      overlay.innerHTML = onboardingStepHTML(step);
+      scheduleContinuousCornersFallback();
+    }
+
+    function finish() {
+      state.onboardingDone = true;
+      save();
+      overlay.classList.add("is-closing");
+      document.body.classList.remove("onboarding-open");
+      if (app && "inert" in app) app.inert = false;
+      window.setTimeout(function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, reduceMotion() ? 0 : 360);
+    }
+
+    overlay.addEventListener("click", function (event) {
+      if (event.target.closest("[data-onboarding-next]")) {
+        step = Math.min(2, step + 1);
+        paint();
+        return;
+      }
+      if (event.target.closest("[data-onboarding-back]")) {
+        step = Math.max(0, step - 1);
+        paint();
+        return;
+      }
+      if (event.target.closest("[data-onboarding-start]")) finish();
+    });
+
+    paint();
+    document.body.appendChild(overlay);
+  }
 
   function sloganPool() {
     return state.slogans.concat(L.SLOGANS);
@@ -6119,12 +6442,12 @@ button.chip.selected {
   }
 
   function capturePageTransitionLayer(motion) {
-    if (motion !== "sheet-forward" && motion !== "sheet-back") return null;
+    if (motion !== "sheet-back") return null;
     var current = $(".main");
     if (!current) return null;
     var rect = current.getBoundingClientRect();
     var layer = document.createElement("div");
-    layer.className = "page-transition-layer " + (motion === "sheet-back" ? "is-over" : "is-under");
+    layer.className = "page-transition-layer is-over";
     layer.style.left = rect.left + "px";
     layer.style.top = rect.top + "px";
     layer.style.width = rect.width + "px";
@@ -6138,7 +6461,7 @@ button.chip.selected {
     document.body.appendChild(layer);
     window.requestAnimationFrame(function () {
       window.requestAnimationFrame(function () {
-        layer.classList.add(motion === "sheet-forward" ? "is-receding" : "is-exiting-down");
+        layer.classList.add("is-exiting-down");
       });
     });
     window.setTimeout(function () {
@@ -6150,6 +6473,9 @@ button.chip.selected {
   function render(resetScroll) {
     var theme = resolvedTheme();
     document.documentElement.setAttribute("data-theme", theme);
+    var lockHomeScroll = state.view === "home";
+    document.documentElement.classList.toggle("home-scroll-locked", lockHomeScroll);
+    document.body.classList.toggle("home-scroll-locked", lockHomeScroll);
     // 让手机状态栏的颜色跟着主题走，避免顶部出现一条对不上的色块
     var themeColor = document.getElementById("themeColor");
     if (themeColor) themeColor.setAttribute("content", theme === "light" ? "#f4f6fa" : "#0e1116");
@@ -6211,6 +6537,9 @@ button.chip.selected {
     ".option-module",
     ".theme-option",
     ".theme-preview",
+    ".onboarding-choice",
+    ".onboarding-feature",
+    ".onboarding-icon",
     ".sum",
     ".record-stat",
     ".record-item",
@@ -6319,6 +6648,7 @@ button.chip.selected {
       version: 1,
       exportedAt: new Date().toISOString(),
       theme: state.theme,
+      onboardingDone: state.onboardingDone,
       habits: state.habits,
       slogans: state.slogans,
       reminder: state.reminder
@@ -6364,6 +6694,7 @@ button.chip.selected {
         }
         if (Array.isArray(data.slogans)) state.slogans = normalizeSlogans(data.slogans);
         if (data.reminder) state.reminder = normalizeReminder(data.reminder);
+        state.onboardingDone = true;
         state.activeId = state.habits.length ? state.habits[0].id : null;
         state.view = "home";
         save();
@@ -6378,7 +6709,9 @@ button.chip.selected {
   function clearAll() {
     if (!window.confirm("确定要清空所有记录吗？这个操作无法撤销，建议先导出备份。")) return;
     if (!window.confirm("再确认一次：所有戒断计时、冲动与复吸记录都会被删除。")) return;
+    var onboardingDone = state.onboardingDone;
     state = emptyState();
+    state.onboardingDone = onboardingDone;
     save();
     render(true);
     toast("已清空");
@@ -6645,6 +6978,9 @@ button.chip.selected {
 
   registerReminderWorker();
   render(true);
+  if (!state.onboardingDone) {
+    window.setTimeout(showOnboarding, 0);
+  }
   window.setTimeout(function () {
     checkReminder(Date.now());
   }, 250);
