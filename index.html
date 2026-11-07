@@ -924,12 +924,15 @@ body.modal-open .main {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin: 14px 0;
+  width: calc(100% - 32px);
+  max-width: 460px;
+  margin: 14px auto;
 }
 
 .option-module {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
   gap: 10px;
   align-items: center;
   min-height: 68px;
@@ -943,19 +946,24 @@ body.modal-open .main {
 }
 
 .option-module .row-tile {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  font-size: 19px;
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: transparent;
+  font-size: 21px;
 }
 
 .option-module .row-name {
+  flex: 0 1 auto;
+  min-width: 0;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.35;
+  text-align: left;
 }
 
 .option-module .row-chev {
+  flex: 0 0 auto;
   font-size: 19px;
 }
 
@@ -1375,25 +1383,34 @@ body.modal-open .main {
   position: relative;
   display: grid;
   gap: 10px;
-}
-
-.slogan-label {
-  font-size: 13px;
-  color: var(--muted);
+  text-align: center;
 }
 
 .slogan-text {
-  margin: 0;
-  font-size: 20px;
+  margin: 0 auto;
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.18;
+  max-width: 52ch;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.slogan-source {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.45;
-  max-width: 46ch;
+  text-align: center;
 }
 
 .slogan-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
+  justify-content: center;
   margin-top: 2px;
 }
 
@@ -2382,7 +2399,7 @@ body.modal-open .main {
   }
 
   .slogan-text {
-    font-size: 17px;
+    font-size: 48px;
   }
 
   .card {
@@ -3340,6 +3357,14 @@ button.chip.selected {
     return list[Math.abs(seed) % list.length];
   }
 
+  function sloganForHour(pool, now, offset) {
+    var list = pool && pool.length ? pool : SLOGANS;
+    var hourIndex = Math.floor((Number(now) || Date.now()) / HOUR);
+    var index = (hourIndex + (Number(offset) || 0)) % list.length;
+    if (index < 0) index += list.length;
+    return list[index];
+  }
+
   var ENCOURAGEMENTS = [
     "冲动平均只能坚持几分钟，你刚刚赢了它一轮。",
     "每一次忍住，都是在把那条老回路削弱一点。",
@@ -3417,6 +3442,7 @@ button.chip.selected {
     getPreset: getPreset,
     presetMilestones: presetMilestones,
     sloganForDay: sloganForDay,
+    sloganForHour: sloganForHour,
     pick: pick
   };
 });
@@ -4138,11 +4164,24 @@ button.chip.selected {
     return state.slogans.concat(L.SLOGANS);
   }
 
+  function sloganParts(text) {
+    var match = String(text || "").match(/^(.*?)(?:——|—)\s*(.+)$/);
+    if (!match) return { quote: String(text || ""), source: "" };
+    return {
+      quote: match[1].trim(),
+      source: "—— " + match[2].trim()
+    };
+  }
+
   function sloganHTML() {
+    var parts = sloganParts(L.sloganForHour(sloganPool(), Date.now(), ui.sloganOffset));
     return (
-      '<section class="card slogan">' +
-      '<span class="slogan-label">' + (ui.sloganOffset ? "换了一句" : "今日标语") + "</span>" +
-      '<p class="slogan-text' + (ui.sloganAnim ? " slogan-in" : "") + '">' + esc(L.sloganForDay(sloganPool(), L.dayKey(Date.now()), ui.sloganOffset)) + "</p>" +
+      '<section class="slogan">' +
+      '<p class="slogan-text' + (ui.sloganAnim ? " slogan-in" : "") + '"><span class="slogan-quote">' +
+      esc(parts.quote) +
+      "</span>" +
+      (parts.source ? '<span class="slogan-source">' + esc(parts.source) + "</span>" : "") +
+      "</p>" +
       '<div class="slogan-actions">' +
       '<button class="link-btn" data-act="next-slogan">换一句</button>' +
       '<button class="link-btn" data-act="manage-slogans">我的标语' +
@@ -5593,7 +5632,7 @@ button.chip.selected {
       return presetModuleHTML(p, 'data-act="new-habit" data-key="' + p.key + '"');
     }).join("");
     return (
-      '<section class="card intro">' +
+      '<section class="intro">' +
       "<h2>从一个坏习惯开始</h2>" +
       '<p class="muted">选一个你现在最想摆脱的。应用会帮你计时、记录冲动、算你省回了多少钱或多少时间。</p>' +
       '<div class="option-modules">' + presets + "</div>" +
@@ -6050,7 +6089,7 @@ button.chip.selected {
       '<div class="actions"><button class="btn ghost small-btn" data-act="test-reminder">测试提醒</button>' +
       '<button class="btn ghost small-btn" data-act="calendar-reminder">添加到系统日历</button></div></section>' +
       '<section class="card"><h3>我的自律标语</h3>' +
-      '<p class="muted small">首页每天轮换一句标语。你可以写自己的，它们会和内置标语一起出现，也会出现在冲动急救的呼吸引导里。</p>' +
+      '<p class="muted small">首页每小时自动轮换一句标语。你可以写自己的，它们会和内置标语一起出现，也会出现在冲动急救的呼吸引导里。</p>' +
       '<div class="actions"><button class="btn ghost" data-act="manage-slogans">管理我的标语' +
       (state.slogans.length ? "（" + state.slogans.length + " 句）" : "") +
       "</button></div></section>" +
@@ -6488,6 +6527,7 @@ button.chip.selected {
   });
 
   var lastDayKey = L.dayKey(Date.now());
+  var lastSloganHour = Math.floor(Date.now() / L.HOUR);
   if (systemTheme) {
     var onSystemThemeChange = function () {
       if (state.theme === "system") render();
@@ -6513,6 +6553,15 @@ button.chip.selected {
     var now = Date.now();
     if (L.dayKey(now) !== lastDayKey) {
       lastDayKey = L.dayKey(now);
+      lastSloganHour = Math.floor(now / L.HOUR);
+      ui.sloganOffset = 0;
+      render();
+      return;
+    }
+    var currentSloganHour = Math.floor(now / L.HOUR);
+    if (currentSloganHour !== lastSloganHour) {
+      lastSloganHour = currentSloganHour;
+      ui.sloganOffset = 0;
       render();
       return;
     }
