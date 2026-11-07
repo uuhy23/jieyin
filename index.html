@@ -518,7 +518,7 @@ p {
   max-width: 960px;
   margin: 0 auto;
   /* 底部要给悬浮导航栏留出位置 */
-  padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(104px + env(safe-area-inset-bottom, 0px));
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 18px calc(104px + env(safe-area-inset-bottom, 0px));
   display: grid;
   gap: 16px;
   transform-origin: 50% 0;
@@ -2407,7 +2407,7 @@ body.modal-open .main {
   }
 
   .main {
-    padding: calc(14px + env(safe-area-inset-top, 0px)) 12px calc(100px + env(safe-area-inset-bottom, 0px));
+    padding: calc(28px + env(safe-area-inset-top, 0px)) 12px calc(100px + env(safe-area-inset-bottom, 0px));
   }
 
   .form .row {
@@ -6069,7 +6069,7 @@ button.chip.selected {
       '<section class="card"><h3>每日提醒</h3>' +
       '<p class="muted small">浏览器通知在页面打开或退到后台时提醒。完全关闭浏览器后，网页无法保证定时通知；需要关掉页面也提醒时，请使用「添加到系统日历」。iPhone 需先将网站添加到主屏幕并允许通知。</p>' +
       '<div class="reminder-row">' +
-      '<button class="btn ' + (state.reminder.enabled ? "primary" : "ghost") + '" data-act="toggle-reminder">' +
+      '<button class="btn ' + (state.reminder.enabled ? "ghost" : "primary") + '" data-act="toggle-reminder">' +
       (state.reminder.enabled ? "每日提醒已开启" : "开启每日提醒") +
       "</button>" +
       '<div class="time-field"><span>提醒时间</span>' +
