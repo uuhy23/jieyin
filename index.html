@@ -5896,25 +5896,6 @@ button.chip.selected {
       }
     });
 
-    function afterButtonSpring(button, action) {
-      if (reduceMotion()) {
-        action();
-        return;
-      }
-      var finished = false;
-      var fallback = window.setTimeout(run, BUTTON_SPRING_MS + 40);
-      function run() {
-        if (finished) return;
-        finished = true;
-        clearTimeout(fallback);
-        action();
-      }
-      if (!button || !button.finished) {
-        return;
-      }
-      button.finished.then(run, run);
-    }
-
     function endDrag(event) {
       if (!dragging) return;
       dragging = false;
@@ -5932,34 +5913,24 @@ button.chip.selected {
         place(activeIndex);
         if (createHit) {
           // 指针捕获之后浏览器不再把 click 交给按钮，这里自己接住「+」
-          ui.suppressTabClick = Date.now() + BUTTON_SPRING_MS + 120;
-          var createAnimation = playButtonRelease(pressedButton);
-          afterButtonSpring(createAnimation, openPresetPicker);
+          ui.suppressTabClick = Date.now() + 400;
+          openPresetPicker();
           return;
         }
         // 在习惯详情页时，点「打卡」也要回到列表，所以不能只比“是否当前页签”
-        if (tapIndex !== activeIndex || state.view === "detail") {
-          ui.suppressTabClick = Date.now() + BUTTON_SPRING_MS + 120;
-          var tapAnimation = playButtonRelease(pressedButton);
-          afterButtonSpring(tapAnimation, function () {
-            goTo(TABS[tapIndex].key);
-          });
-        }
+        if (tapIndex !== activeIndex || state.view === "detail") goTo(TABS[tapIndex].key);
         return;
       }
 
       var offset = limit(startOffset + (event.clientX - startX), 0, maxOffset());
       var index = nearestIndex(offset, width);
-      ui.suppressTabClick = Date.now() + BUTTON_SPRING_MS + 120;
+      ui.suppressTabClick = Date.now() + 500;
       ui.tabGeom = { index: index, offset: offset, width: width };
       paint(ui.tabGeom);
       if (index === activeIndex && state.view !== "detail") {
         render(); // 弹回原位
       } else {
-        var dragAnimation = playButtonRelease(pressedButton);
-        afterButtonSpring(dragAnimation, function () {
-          goTo(TABS[index].key);
-        });
+        goTo(TABS[index].key);
       }
     }
 
@@ -7045,6 +7016,7 @@ button.chip.selected {
 
   function playButtonRelease(button) {
     if (!button || button.disabled) return null;
+    if (button.closest(".tabbar")) return null;
     button.classList.remove("is-spring-release");
     void button.offsetWidth;
     button.classList.add("is-spring-release");
