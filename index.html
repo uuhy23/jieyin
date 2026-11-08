@@ -2397,7 +2397,7 @@ body.onboarding-open {
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
-  animation: sheetBackdropIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetBackdropIn 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal {
@@ -2416,7 +2416,7 @@ body.onboarding-open {
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   transform-origin: 50% 100%;
-  animation: sheetIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal.wide {
@@ -2462,12 +2462,12 @@ body.onboarding-open {
 
 .overlay.is-closing {
   pointer-events: none;
-  animation: sheetBackdropOut 0.42s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: sheetBackdropOut 0.14s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
 .overlay.is-closing .modal,
 .overlay.is-closing .modal-body {
-  animation: sheetOut 0.42s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: sheetOut 0.14s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
 .modal-body {
@@ -2484,7 +2484,7 @@ body.onboarding-open {
   background: var(--card);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   transform-origin: 50% 100%;
-  animation: sheetIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal-foot {
@@ -2655,7 +2655,7 @@ button:active:not(:disabled) {
 }
 
 button.is-spring-release:not(:disabled) {
-  animation: button-spring-release 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: button-spring-release 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 button.seg-btn.active,
@@ -3947,7 +3947,7 @@ button.chip.selected {
     pulse: null,
     sloganAnim: false
   };
-  var BUTTON_SPRING_MS = 720;
+  var BUTTON_SPRING_MS = 600;
 
   function reduceMotion() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -4368,7 +4368,7 @@ button.chip.selected {
     if (typeof overlay.__cleanup === "function") overlay.__cleanup();
     overlay.classList.add("is-closing");
     if (!$(".overlay:not(.is-closing)")) document.body.classList.remove("modal-open");
-    var delay = reduceMotion() ? 0 : 420;
+    var delay = reduceMotion() ? 0 : 160;
     window.setTimeout(function () {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
       if (!$(".overlay:not(.is-closing)") && !$(".overlay")) document.body.classList.remove("modal-open");
