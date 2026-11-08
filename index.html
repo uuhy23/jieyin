@@ -2397,7 +2397,7 @@ body.onboarding-open {
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
-  animation: sheetBackdropIn 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetBackdropIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal {
@@ -2416,7 +2416,7 @@ body.onboarding-open {
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   transform-origin: 50% 100%;
-  animation: sheetIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal.wide {
@@ -2465,9 +2465,18 @@ body.onboarding-open {
   animation: sheetBackdropOut 0.14s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
+.overlay.is-closing.is-immediate {
+  animation-duration: 90ms;
+}
+
 .overlay.is-closing .modal,
 .overlay.is-closing .modal-body {
   animation: sheetOut 0.14s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.overlay.is-closing.is-immediate .modal,
+.overlay.is-closing.is-immediate .modal-body {
+  animation-duration: 90ms;
 }
 
 .modal-body {
@@ -2484,7 +2493,7 @@ body.onboarding-open {
   background: var(--card);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   transform-origin: 50% 100%;
-  animation: sheetIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sheetIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal-foot {
@@ -3944,6 +3953,7 @@ button.chip.selected {
     lastViewKey: null,
     forceAnim: false,
     pageMotion: null,
+    immediateModalDismiss: false,
     pulse: null,
     sloganAnim: false
   };
@@ -4355,7 +4365,10 @@ button.chip.selected {
     document.body.classList.add("modal-open");
     if (opts.backdropClose !== false) {
       overlay.addEventListener("mousedown", function (e) {
-        if (e.target === overlay) closeModal(overlay);
+        if (e.target === overlay) {
+          ui.immediateModalDismiss = true;
+          closeModal(overlay);
+        }
       });
     }
     scheduleContinuousCornersFallback();
@@ -4366,9 +4379,12 @@ button.chip.selected {
     if (!overlay) return;
     if (overlay.classList.contains("is-closing")) return;
     if (typeof overlay.__cleanup === "function") overlay.__cleanup();
+    var immediate = ui.immediateModalDismiss;
+    ui.immediateModalDismiss = false;
     overlay.classList.add("is-closing");
+    if (immediate) overlay.classList.add("is-immediate");
     if (!$(".overlay:not(.is-closing)")) document.body.classList.remove("modal-open");
-    var delay = reduceMotion() ? 0 : 160;
+    var delay = reduceMotion() ? 0 : immediate ? 100 : 160;
     window.setTimeout(function () {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
       if (!$(".overlay:not(.is-closing)") && !$(".overlay")) document.body.classList.remove("modal-open");
@@ -4377,7 +4393,10 @@ button.chip.selected {
 
   function closeTopModal() {
     var all = $$(".overlay");
-    if (all.length) closeModal(all[all.length - 1]);
+    if (all.length) {
+      ui.immediateModalDismiss = true;
+      closeModal(all[all.length - 1]);
+    }
   }
 
   /* ==================== 自律标语 ==================== */
@@ -6778,11 +6797,23 @@ button.chip.selected {
     if (!button.classList.contains("is-spring-release")) playButtonRelease(button);
   }
 
+  function isImmediateModalDismiss(button) {
+    return button.matches(
+      '[data-time-action="cancel"], [data-form="cancel"], [data-pick="cancel"], ' +
+        '[data-slogan="close"], [data-log="close"], [data-re="cancel"], ' +
+        '[data-record-save="cancel"], [data-record-close]'
+    );
+  }
+
   document.addEventListener(
     "click",
     function (event) {
       var button = event.target.closest("button");
       if (!button || button.disabled) return;
+      if (isImmediateModalDismiss(button)) {
+        ui.immediateModalDismiss = true;
+        return;
+      }
       if (button.__springCommit) return;
       if (!event.isTrusted || reduceMotion()) return;
       if (button.classList.contains("time-option")) return;
